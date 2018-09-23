@@ -1,0 +1,20 @@
+<html>
+<body>
+	<h2>{{ resume.title }}</h2>
+	<h3>{{ resume.timestamp }}</h3>
+
+	{% for sec in section %}
+
+		<h4>{{ sec.title }}</h4>
+
+		{% for pt in point %}
+			{% if pt.section_id.id == sec.id %}
+				<p>{{ pt.content }}</p>
+			{% endif %}
+
+		{% endfor %}
+
+	{% endfor %}
+
+</body>
+</html>

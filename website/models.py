@@ -1,23 +1,31 @@
 from django.db import models
 from django.utils import timezone
 
-class Users(models.Model):
-	
-	LIST_OF_DEPARTMENTS = (
-		('CS','Computer Science and Engineering'),
-		('MA','Mathematics'),
-		('EE','Electrical Engineering'),
-		('CE','Civil Engineering'),
-	)
+POINT_TYPE = (
+	('N','None'),
+	('F','Freeze'),
+	('P','Pending'),
+	('V','Verified'),
+	('R','Rejected'),
+)
 
-	LIST_OF_YEARS = (
-		('B1','B.Tech. 1st Year'),
-		('B2','B.Tech. 2nd Year'),
-		('B3','B.Tech. 3rd Year'),
-		('B4','B.Tech. 4th Year'),
-		('M1','M.Tech. 1st Year'),
-		('M2','M.Tech. 2nd Year'),
-	)
+LIST_OF_DEPARTMENTS = (
+	('CS','Computer Science and Engineering'),
+	('MA','Mathematics'),
+	('EE','Electrical Engineering'),
+	('CE','Civil Engineering'),
+)
+
+LIST_OF_YEARS = (
+	('B1','B.Tech. 1st Year'),
+	('B2','B.Tech. 2nd Year'),
+	('B3','B.Tech. 3rd Year'),
+	('B4','B.Tech. 4th Year'),
+	('M1','M.Tech. 1st Year'),
+	('M2','M.Tech. 2nd Year'),
+)
+
+class Users(models.Model):
 
 	roll_number = models.CharField(max_length = 30)
 	name = models.CharField(max_length = 50)
@@ -28,16 +36,18 @@ class Users(models.Model):
 	position = models.CharField(max_length = 100, editable = False, default = '')
 
 	def __str__(self):
-		return self.id
+		return str(self.id)
 
 class Resume(models.Model):
 
 	user = models.ForeignKey('Users', on_delete = models.CASCADE)
-	timestamp = timezone.now()
+	title = models.CharField(max_length = 100, default = '')
+
+	timestamp = models.DateField(null = True)
 	status = models.BooleanField(editable = False, default = False)
 
 	def __str__(self):
-		return self.id
+		return str(self.id)
 
 class Section(models.Model):
 
@@ -45,17 +55,9 @@ class Section(models.Model):
 	title = models.CharField(max_length = 100)
 
 	def __str__(self):
-		return self.id
+		return str(self.id)
 
 class Point(models.Model):
-
-	POINT_TYPE = (
-		('N','None'),
-		('F','Freeze'),
-		('P','Pending'),
-		('V','Verified'),
-		('R','Rejected'),
-	)
 
 	resume_id = models.ForeignKey('Resume', on_delete = models.CASCADE)
 	section_id = models.ForeignKey('Section', on_delete = models.CASCADE)
@@ -63,21 +65,50 @@ class Point(models.Model):
 	position_in_list = models.IntegerField(editable = False, default = 0)
 
 	point_type = models.CharField(max_length = 1, choices = POINT_TYPE, editable = False, default = 'N')
-	user_verify = models.ForeignKey('Users', on_delete = models.CASCADE, null = True)
-	point_comment = models.TextField(editable = False, null = True)
+	
+	content = models.TextField(default = '')
+
+	timestamp = models.DateField(null = True)
+
+class Request(models.Model):
+	
+	section_id = models.ForeignKey('Section', on_delete = models.CASCADE)
+	user_sender = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_request_sender')
+	user_receiver = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_request_receiver')
+
+	request_status = models.CharField(max_length = 1, choices = POINT_TYPE, editable = False, default = 'P')
+
+	point = models.ForeignKey('Point', on_delete = models.CASCADE)
+
+	point_comment = models.TextField(default = '')
+
+	timestamp = models.DateField(null = True)
+
+class Conversation(models.Model):
+
+	user1 = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_conversation_user1')
+	user2 = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_conversation_user2')
+
+
+class Message(models.Model):
+
+	conversation_id = models.ForeignKey('Conversation', on_delete = models.CASCADE)
+	sender = models.ForeignKey('Users', on_delete = models.CASCADE)
+
+	content = models.TextField(default = '')
 
 	timestamp = models.DateField()
 
-class Request(models.Model):
-		
+class Notification(models.Model):
 
+	user_sender = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_notification_sender')
+	user_receiver = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_notification_receiver')
 
+	status = models.BooleanField(editable = False, default = False)
 
+	point = models.ForeignKey('Point', on_delete = models.CASCADE)
 
-
-
-
-
+	timestamp = models.DateField(null = True)
 
 
 
