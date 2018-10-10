@@ -23,7 +23,7 @@ def login_view(request):
 
 	else:
 
-		return render(request, 'website/login.html', {})
+		return render(request, 'website/index.html', {})
 
 def logout_view(request):
 	logout(request)
