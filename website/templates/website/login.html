@@ -1,5 +1,10 @@
-<html>
-	<body>
+{% extends "website/index.html" %}
+
+{% block title %}VerifyMe{% endblock title %}
+{% block section_heading %}Login{% endblock section_heading %}
+{% block navbar %}{% endblock navbar %}
+{% block section_content %}
+	<div align = "center">
 		{% if meta %}
 			{{ meta }}
 		{% endif %}
@@ -9,5 +14,5 @@
 			Password : <input name = "password" type = text><br>
 			<input type = "submit" value = "Login">
 		</form>
-	</body>
-</html>
+	</div>
+{% endblock section_content %}
