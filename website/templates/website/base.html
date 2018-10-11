@@ -11,6 +11,8 @@
     <meta name="robots" content="all,follow">
     <!-- Bootstrap CSS-->
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
     <!-- Font Awesome and Pixeden Icon Stroke icon fonts-->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'css/pe-icon-7-stroke.css' %}">
@@ -25,9 +27,11 @@
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
     <!-- Favicon-->
     <link rel="shortcut icon" href="{% static 'favicon.png' %}">
-
-  </head>
+      <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script-->
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+ </head>
   <body>
+
     <!-- navbar-->
     <header class="header">
       <div role="navigation" class="navbar navbar-default">
@@ -53,7 +57,7 @@
     {% block content %}
     {% endblock content %}
 
-    <!--
+    
     <div class="jumbotron main-jumbotron">
       <div class="container">
         <div class="content">
@@ -63,9 +67,10 @@
         </div>
       </div>
     </div>
-    -->
+    
 
     <!--
+    -->
     <section class="background-gray-lightest">
       <div class="container">
         <div class="row">
@@ -96,9 +101,8 @@
         </div>
       </div>
     </section>
-    -->
     
-    <!--
+    
     <section>
       <div class="container clearfix">
         <div class="row services">
@@ -155,7 +159,7 @@
         </div>
       </div>
     </section>
-    -->
+    
     
     <!--
     <section id="portfolio" class="background-gray-lightest">
@@ -273,6 +277,9 @@
       e.src='//www.google-analytics.com/analytics.js';
       r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
       ga('create','UA-XXXXX-X');ga('send','pageview');
+    </script>
+    <script type="text/javascript">
+      
     </script>
   </body>
 </html>

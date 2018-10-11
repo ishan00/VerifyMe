@@ -4,10 +4,14 @@ from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from .models import Users,Resume,Section,Point,Conversation,Message,Notification
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 
 def login_view(request):
 
+	if request.user.is_authenticated:
+		return redirect('home_view')
 	if request.method == "POST":
 
 		username = request.POST['username']
@@ -31,8 +35,14 @@ def logout_view(request):
 
 #@login_required()
 def home_view(request):
-	user_list = Users.objects.all()
-	return render(request, 'website/home_page.html', {'user_list':user_list})
+	if request.user.is_authenticated:
+		rollNo = request.user.username
+		user = Users.objects.get(roll_number=rollNo)
+		print(user)
+		resume_list = Resume.objects.filter(user = user).order_by("timestamp")
+		return render(request, 'website/home_page.html', {'user':user, 'resume_list': resume_list})
+	else:
+		return render(request, 'website/login.html', {})
 
 
 #@login_required()
@@ -42,13 +52,31 @@ def create_new_resume(request):
 
 
 #@login_required()
-def view_resume(request,id):
+@csrf_exempt
+def view_resume(request):
 
+	print("REQUEST")
+	id = request.POST["id"]
 	resume = Resume.objects.get(id = id)
 	list_of_sections = Section.objects.filter(resume_id = id)
 	list_of_points = Point.objects.filter(resume_id = id)
 
 	return render(request, 'website/display_resume.html', {'resume':resume, 'section':list_of_sections, 'point':list_of_points})
+
+
+#@login_required()
+@csrf_exempt
+def add_resume_view(request):
+	
+	print(request.POST)
+	title = request.POST["title"]
+	rollNo = request.user.username
+	user = Users.objects.get(roll_number=rollNo)
+	resume = Resume(title=title, user=user)
+	resume.save()
+	print(title)
+	print(resume.id)
+	return JsonResponse({'title':title, 'id':resume.id})
 
 
 #@login_required()

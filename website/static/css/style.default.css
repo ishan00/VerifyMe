@@ -1447,6 +1447,116 @@ fieldset[disabled] .btn-primary.active {
   color: #ffffff;
   border: solid 1px #2b90d9;
 }
+/*
+Red Button
+*/
+.btn-red {
+  color: #ff3f3f;
+  background-color: #ffffff;
+  border-color: #ff3f3f;
+}
+.btn-red:hover,
+.btn-red:focus,
+.btn-red:active,
+.btn-red.active,
+.open .dropdown-toggle.btn-red {
+  color: #ff3f3f;
+  background-color: #ebebeb;
+  border-color: #ff3f3f;
+}
+.btn-red:active,
+.btn-red.active,
+.open .dropdown-toggle.btn-red {
+  background-image: none;
+}
+.btn-red.disabled,
+.btn-red[disabled],
+fieldset[disabled] .btn-red,
+.btn-red.disabled:hover,
+.btn-red[disabled]:hover,
+fieldset[disabled] .btn-red:hover,
+.btn-red.disabled:focus,
+.btn-red[disabled]:focus,
+fieldset[disabled] .btn-red:focus,
+.btn-red.disabled:active,
+.btn-red[disabled]:active,
+fieldset[disabled] .btn-red:active,
+.btn-red.disabled.active,
+.btn-red[disabled].active,
+fieldset[disabled] .btn-red.active {
+  background-color: #ffffff;
+  border-color: #ff3f3f;
+}
+.btn-red .badge {
+  color: #ffffff;
+  background-color: #ff3f3f;
+}
+.btn-red:hover,
+.btn-red:focus,
+.btn-red:active,
+.btn-red.active {
+  background: #ff3f3f;
+  color: #ffffff;
+  border: solid 1px #ff3f3f;
+}
+
+/*
+Green Button
+*/
+
+.btn-green {
+  color: #429244;
+  background-color: #ffffff;
+  border-color: #429244;
+}
+.btn-green:hover,
+.btn-green:focus,
+.btn-green:active,
+.btn-green.active,
+.open .dropdown-toggle.btn-green {
+  color: #429244;
+  background-color: #ebebeb;
+  border-color: #1e6fa9;
+}
+.btn-green:active,
+.btn-green.active,
+.open .dropdown-toggle.btn-green {
+  background-image: none;
+}
+.btn-green.disabled,
+.btn-green[disabled],
+fieldset[disabled] .btn-green,
+.btn-green.disabled:hover,
+.btn-green[disabled]:hover,
+fieldset[disabled] .btn-green:hover,
+.btn-green.disabled:focus,
+.btn-green[disabled]:focus,
+fieldset[disabled] .btn-green:focus,
+.btn-green.disabled:active,
+.btn-green[disabled]:active,
+fieldset[disabled] .btn-green:active,
+.btn-green.disabled.active,
+.btn-green[disabled].active,
+fieldset[disabled] .btn-green.active {
+  background-color: #ffffff;
+  border-color: #429244;
+}
+.btn-green .badge {
+  color: #ffffff;
+  background-color: #429244;
+}
+.btn-green:hover,
+.btn-green:focus,
+.btn-green:active,
+.btn-green.active {
+  background: #429244;
+  color: #ffffff;
+  border: solid 1px #429244;
+}
+
+/*
+
+*/
 .btn-transparent {
   color: #555555;
   background-color: transparent;
