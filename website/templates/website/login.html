@@ -1,18 +1,64 @@
-{% extends "website/index.html" %}
+{% extends "website/base.html" %}
 
-{% block title %}VerifyMe{% endblock title %}
-{% block section_heading %}Login{% endblock section_heading %}
-{% block navbar %}{% endblock navbar %}
-{% block section_content %}
-	<div align = "center">
-		{% if meta %}
-			{{ meta }}
-		{% endif %}
-		<form action = "" method = "post">
-			{% csrf_token %}
-			Username : <input name = "username" type = text><br>
-			Password : <input name = "password" type = text><br>
-			<input type = "submit" value = "Login">
-		</form>
+{% block navbar_items %}
+<li><a>You are not logged in</a></li>
+{% endblock navbar_items %}
+
+{% block content %}
+
+<section>
+	<div class="container clearfix">
+		<div class="content">
+			<h1 align="center" class="site-title">Verify Me</h1><br>
+		</div>
+		<div class = "row">
+			<div class="col-sm-1"></div>
+			<div class = "col-sm-4">
+				<h1 align="center">Log In</h1>
+
+				<form action="" method="post">
+					{% csrf_token %}
+					<div class="form-group">
+						<input id="email_modal" type="text" placeholder="Roll Number" class="form-control" name="username">
+					</div>
+					<div class="form-group">
+						<input id="password_modal" type="password" placeholder="Password" class="form-control" name="password">
+					</div>
+					<p class="text-center">
+						<button type="submit" class="btn btn-primary">Enter</button>
+					</p>
+				</form>
+			</div>
+			<div class="col-sm-2"></div>
+			<div class = "col-sm-4">
+				<h1 align="center">Sign Up</h1>
+				<form action="/" method="post">
+					<div class="form-group">
+						<input id="email_modal" type="text" placeholder="Roll Number" class="form-control">
+					</div>
+					<div class="form-group">
+						<input id="name_modal" type="text" placeholder="Full Name" class="form-control">
+					</div>
+					<div class="form-group">
+						<input id="password_modal" type="password" placeholder="Password" class="form-control">
+					</div>
+					<div class="form-group">
+						<select class="form-control" placeholder="Department">
+							<option value="" disabled selected>Department</option>
+							<option>Computer Science and Engineering</option>
+							<option>Electrical Engineering</option>
+							<option>Civil Engineering</option>
+							<option>Mathematics</option>
+						</select>
+					</div>
+					<p class="text-center">
+						<button type="button" class="btn btn-primary">Enter</button>
+					</p>
+				</form>
+			</div>
+			<div class="col-sm-1"></div>
+		</div>
 	</div>
-{% endblock section_content %}
+</section>
+
+{% endblock content %}

@@ -65,6 +65,7 @@ ul.dropdown-menu li a:hover {
   transition: all 0.2s ease-out;
   border-bottom: none;
 }
+/*
 #login-modal {
   overflow: hidden;
 }
@@ -85,13 +86,11 @@ ul.dropdown-menu li a:hover {
 .modal-backdrop {
   z-index: 1035;
 }
-/*
-
 =====================
 GENERAL
 =====================
-
 */
+
 html {
   height: 100%;
 }
@@ -1169,11 +1168,7 @@ STYLE SWITCHER FOR DEMO
     margin-left: -15px;
   }
 }
-.navbar-toggle {
-  padding: 9px 10px !important;
-  margin-right: 15px;
-  border-radius: 0;
-}
+
 .navbar-nav {
   margin: 9.75px -15px;
 }
@@ -1218,45 +1213,7 @@ STYLE SWITCHER FOR DEMO
     margin-right: -15px;
   }
 }
-.navbar-form {
-  margin-left: -15px;
-  margin-right: -15px;
-  padding: 10px 15px;
-  border: none;
-  margin-top: 12.5px;
-  margin-bottom: 12.5px;
-}
-@media (max-width: 767px) {
-  .navbar-form .form-group {
-    margin-bottom: 5px;
-  }
-}
-.navbar-btn {
-  margin-top: 12.5px;
-  margin-bottom: 12.5px;
-}
-.navbar-btn.btn-sm {
-  margin-top: 15px;
-  margin-bottom: 15px;
-}
-.navbar-btn.btn-xs {
-  margin-top: 19px;
-  margin-bottom: 19px;
-}
-.navbar-text {
-  margin-top: 19.5px;
-  margin-bottom: 19.5px;
-}
-@media (min-width: 768px) {
-  .navbar-text {
-    float: left;
-    margin-left: 15px;
-    margin-right: 15px;
-  }
-  .navbar-text.navbar-right:last-child {
-    margin-right: 0;
-  }
-}
+
 .navbar-default {
   background-color: #ffffff;
   border-bottom-color: transparent;

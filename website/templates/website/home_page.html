@@ -1,10 +1,117 @@
-<html>
-<body>
-    {% for user in user_list %}
-    	<h2>{{ user.roll_number }}</h2>
-    	<h3>{{ user.name }}</h3>
-    	<h4>{{ user.department }}</h4>
-    	<h4>{{ user.year }}</h4>
-    {% endfor %}
-</body>
-</html>
+{% extends "website/base.html" %}
+
+{% block navbar_items %}
+<li><a><i class="fas fa-envelope"></i></a></li>
+<li><a><i class="fas fa-bell"></i></a></li>
+<li><a><i class="fas fa-cog"></i></a></li>
+<li><a>Username</a></li>
+{% endblock navbar_items %}
+
+{% block content %}
+<section>
+	<div class="container clearfix">
+		<div class="content">
+			<h1 align="center" class="site-title">Verify Me</h1><br>
+		</div>
+		<div class = "row">
+			<div class="col-sm-1"></div>
+			<div class = "col-sm-4">
+				<h1 align="center">Log In</h1>
+
+				<form action="customer-orders.html" method="post">
+					<div class="form-group">
+						<input id="email_modal" type="text" placeholder="Roll Number" class="form-control">
+					</div>
+					<div class="form-group">
+						<input id="password_modal" type="password" placeholder="Password" class="form-control">
+					</div>
+					<p class="text-center">
+						<button type="button" class="btn btn-primary">Enter</button>
+					</p>
+				</form>
+			</div>
+			<div class="col-sm-2"></div>
+			<div class = "col-sm-4">
+				<h1 align="center">Sign Up</h1>
+				<form action="customer-orders.html" method="post">
+					<div class="form-group">
+						<input id="email_modal" type="text" placeholder="Roll Number" class="form-control">
+					</div>
+					<div class="form-group">
+						<input id="name_modal" type="text" placeholder="Full Name" class="form-control">
+					</div>
+					<div class="form-group">
+						<input id="password_modal" type="password" placeholder="Password" class="form-control">
+					</div>
+					<div class="form-group">
+						<select class="form-control" placeholder="Department">
+							<option value="" disabled selected>Department</option>
+							<option>Computer Science and Engineering</option>
+							<option>Electrical Engineering</option>
+							<option>Civil Engineering</option>
+							<option>Mathematics</option>
+						</select>
+					</div>
+					<p class="text-center">
+						<button type="button" class="btn btn-primary">Enter</button>
+					</p>
+				</form>
+			</div>
+			<div class="col-sm-1"></div>
+		</div>
+	</div>
+</section>
+<section>
+	<div class="container clearfix">
+		<div class="content">
+			<h1 align="center" class="site-title">Verify Me</h1><br>
+		</div>
+		<div class = "row">
+			<div class="col-sm-1"></div>
+			<div class = "col-sm-4">
+				<h1 align="center">Log In</h1>
+
+				<form action="customer-orders.html" method="post">
+					<div class="form-group">
+						<input id="email_modal" type="text" placeholder="Roll Number" class="form-control">
+					</div>
+					<div class="form-group">
+						<input id="password_modal" type="password" placeholder="Password" class="form-control">
+					</div>
+					<p class="text-center">
+						<button type="button" class="btn btn-primary">Enter</button>
+					</p>
+				</form>
+			</div>
+			<div class="col-sm-2"></div>
+			<div class = "col-sm-4">
+				<h1 align="center">Sign Up</h1>
+				<form action="customer-orders.html" method="post">
+					<div class="form-group">
+						<input id="email_modal" type="text" placeholder="Roll Number" class="form-control">
+					</div>
+					<div class="form-group">
+						<input id="name_modal" type="text" placeholder="Full Name" class="form-control">
+					</div>
+					<div class="form-group">
+						<input id="password_modal" type="password" placeholder="Password" class="form-control">
+					</div>
+					<div class="form-group">
+						<select class="form-control" placeholder="Department">
+							<option value="" disabled selected>Department</option>
+							<option>Computer Science and Engineering</option>
+							<option>Electrical Engineering</option>
+							<option>Civil Engineering</option>
+							<option>Mathematics</option>
+						</select>
+					</div>
+					<p class="text-center">
+						<button type="button" class="btn btn-primary">Enter</button>
+					</p>
+				</form>
+			</div>
+			<div class="col-sm-1"></div>
+		</div>
+	</div>
+</section>
+{% endblock content %}
