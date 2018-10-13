@@ -16,43 +16,54 @@
 			<div class = "col-sm-4">
 				<h1 align="center">Log In</h1>
 
-				<form action="" method="post">
-					{% csrf_token %}
+				<form name="_login_form_" onsubmit="return login_form()" method="post">{% csrf_token %}
+					<p id = "_login_">{{ login_status }}</p>
 					<div class="form-group">
-						<input id="email_modal" type="text" placeholder="Roll Number" class="form-control" name="username">
+						<input type="text" placeholder="Roll Number" class="form-control" name="roll">
 					</div>
 					<div class="form-group">
-						<input id="password_modal" type="password" placeholder="Password" class="form-control" name="password">
+						<input type="password" placeholder="Password" class="form-control" name="password">
+					</div>
+					<div class="form-group">
+						<input type="hidden" class="form-control" name="type" value="login">
 					</div>
 					<p class="text-center">
 						<button type="submit" class="btn btn-primary">Enter</button>
 					</p>
 				</form>
+
 			</div>
 			<div class="col-sm-2"></div>
 			<div class = "col-sm-4">
 				<h1 align="center">Sign Up</h1>
-				<form action="/" method="post">
+				<form name = "_registration_form_" onsubmit = "return registration_form()" method="post">{% csrf_token %}
+					<p id = "_registration_">{{ registration_status }}</p> 
 					<div class="form-group">
-						<input id="email_modal" type="text" placeholder="Roll Number" class="form-control">
+						<input type="text" placeholder="Roll Number" class="form-control" name="roll">
 					</div>
 					<div class="form-group">
-						<input id="name_modal" type="text" placeholder="Full Name" class="form-control">
+						<input type="text" placeholder="Full Name" class="form-control" name="name">
 					</div>
 					<div class="form-group">
-						<input id="password_modal" type="password" placeholder="Password" class="form-control">
+						<input type="password" placeholder="Password" class="form-control" name="password">
 					</div>
 					<div class="form-group">
-						<select class="form-control" placeholder="Department">
-							<option value="" disabled selected>Department</option>
-							<option>Computer Science and Engineering</option>
-							<option>Electrical Engineering</option>
-							<option>Civil Engineering</option>
-							<option>Mathematics</option>
+						<input type="password" placeholder="Confirm Password" class="form-control" name="password1">
+					</div>
+					<div class="form-group">
+						<select class="form-control" placeholder="Department" name="department">
+							<option value="">Department</option>
+							<option value="CS">Computer Science and Engineering</option>
+							<option value="EE">Electrical Engineering</option>
+							<option value="CE">Civil Engineering</option>
+							<option value="MA">Mathematics</option>
 						</select>
 					</div>
+					<div class="form-group">
+						<input type="hidden" class="form-control" name="type" value="registration">
+					</div>
 					<p class="text-center">
-						<button type="button" class="btn btn-primary">Enter</button>
+						<button type="submit" class="btn btn-primary">Enter</button>
 					</p>
 				</form>
 			</div>
@@ -60,5 +71,76 @@
 		</div>
 	</div>
 </section>
-
 {% endblock content %}
+
+{% block javascript %}
+<script type="text/javascript">
+
+	function login_form(){
+
+		var f = document.forms["_login_form_"];
+
+		var roll = f["roll"].value;
+		var pass = f["password"].value;
+
+		if (roll == ""){
+			document.getElementById("_login_").innerHTML = "Roll number field cannot be empty";
+			f["roll"].value = "";
+			f["password"].value = "";
+		}
+		else if (pass == ""){
+			document.getElementById("_login_").innerHTML = "Password field cannot be empty";
+			f["roll"].value = "";
+			f["password"].value = "";
+		}
+		else{
+
+			var att = document.createAttribute("action");
+			att.value = "";
+			f.setAttributeNode(att);
+			f.submit();
+		
+		}
+		return false;
+	}
+
+	function registration_form(){
+
+		var f = document.forms["_registration_form_"];
+				
+		var roll = f["roll"].value;
+		var name = f["name"].value;
+		var pass = f["password"].value;
+		var pass1 = f["password1"].value;
+		var dept = f["department"].value;
+
+		if (roll == ""){
+			document.getElementById("_registration_").innerHTML = "Roll number field cannot be empty";
+		}
+		else if (pass == "" || pass1 == ""){
+			document.getElementById("_registration_").innerHTML = "Password field cannot be empty";
+		}
+		else if (name = ""){
+			document.getElementById("_registration_").innerHTML = "Name field cannot be empty";
+		}
+		else if (pass != pass1){
+			document.getElementById("_registration_").innerHTML = "Passwords do not match";	
+		}
+		else if (dept == ""){
+			document.getElementById("_registration_").innerHTML = "You must select a department";	
+		}
+		else{
+			
+			var att = document.createAttribute("action");
+			att.value = "";
+			f.setAttributeNode(att);
+			f.submit();
+
+		}
+		return false;
+	}
+
+
+</script>
+
+{% endblock javascript %}

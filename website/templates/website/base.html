@@ -57,7 +57,7 @@
     {% block content %}
     {% endblock content %}
 
-    
+    <!--
     <div class="jumbotron main-jumbotron">
       <div class="container">
         <div class="content">
@@ -67,10 +67,9 @@
         </div>
       </div>
     </div>
-    
+    -->
 
     <!--
-    -->
     <section class="background-gray-lightest">
       <div class="container">
         <div class="row">
@@ -101,8 +100,9 @@
         </div>
       </div>
     </section>
+    -->
     
-    
+    <!--
     <section>
       <div class="container clearfix">
         <div class="row services">
@@ -159,7 +159,7 @@
         </div>
       </div>
     </section>
-    
+    -->
     
     <!--
     <section id="portfolio" class="background-gray-lightest">
@@ -264,11 +264,14 @@
     -->
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/jquery.cookie.js' %}"> </script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/lightbox.min.js' %}"></script>
     <script src="{% static 'js/front.js' %}"></script>
 
+    {% block javascript %}
+    
+    {% endblock javascript %}
 
     <script>
       (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
@@ -277,9 +280,6 @@
       e.src='//www.google-analytics.com/analytics.js';
       r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
       ga('create','UA-XXXXX-X');ga('send','pageview');
-    </script>
-    <script type="text/javascript">
-      
     </script>
   </body>
 </html>

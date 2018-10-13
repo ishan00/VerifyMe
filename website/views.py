@@ -10,38 +10,83 @@ from django.views.decorators.csrf import csrf_exempt
 
 def login_view(request):
 
+	print (request)
+
 	if request.user.is_authenticated:
 		return redirect('home_view')
+
 	if request.method == "POST":
 
-		username = request.POST['username']
-		password = request.POST['password']
+		if request.POST["type"] == "login":
 
-		user = authenticate(request, username = username, password = password)
+			roll = request.POST["roll"]
+			password = request.POST["password"]
 
-		if user is not None:
-			login(request, user)
-			return redirect('home_view')
-		else:
-			return render(request, 'website/login.html', {'meta':'Incorrect Username / Password'})
+			print (roll, password)
+
+			user = authenticate(request, username = roll, password = password)
+
+			if user is not None:
+				login(request, user)
+				return redirect('/home')
+
+			else:
+
+				return render(request, 'website/login.html', {'login_status':'Incorrect roll number or password'})
+
+		elif request.POST["type"] == "registration":
+
+			roll = request.POST['roll']
+			name = request.POST['name']
+			pasw = request.POST['password']
+			dept = request.POST['department']
+
+			if User.objects.filter(username = roll).count() == 0:
+
+				user = User.objects.create_user(username = roll, password = pasw)
+				user.save()
+
+				user = Users.objects.create(roll_number = roll, name = name, department = dept, year = 'B3')
+
+				login(request, user)
+				return ('/home')
+
+			else:
+
+				return render(request, 'website/login.html', {'registration_status':'This roll number already exists'})
 
 	else:
 
 		return render(request, 'website/login.html', {})
 
+def register_user_view(request):
+
+	print (request)
+
+	if request.method == "POST":
+
+		roll = request.POST["roll"]
+		name = request.POST["roll"]
+		password = request.POST["roll"]
+		password1 = request.POST["roll"]
+		department = request.POST["roll"]
+
+
 def logout_view(request):
 	logout(request)
 	return redirect('login_view')
 
-#@login_required()
 def home_view(request):
+
 	if request.user.is_authenticated:
-		rollNo = request.user.username
-		user = Users.objects.get(roll_number=rollNo)
-		print(user)
-		resume_list = Resume.objects.filter(user = user).order_by("timestamp")
+		
+		curr_user = int(request.user.username)
+		
+		resume_list = Resume.objects.filter(user = curr_user).order_by("timestamp")
 		return render(request, 'website/home_page.html', {'user':user, 'resume_list': resume_list})
+
 	else:
+
 		return render(request, 'website/login.html', {})
 
 
