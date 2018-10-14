@@ -76,6 +76,9 @@ def home_view(request):
 		user = Users.objects.get(roll_number = logged_user_roll)
 		resume_list = Resume.objects.filter(user = user).order_by("timestamp")
 
+		if request.session.get('resume_id') != None:
+			del request.session['resume_id']
+
 		return render(request, 'website/home_page.html', {'user':user, 'resume_list': resume_list})
 
 	else:
@@ -91,13 +94,40 @@ def create_new_resume(request):
 @csrf_exempt
 def view_resume(request):
 
-	print("REQUEST")
-	id = request.POST["id"]
-	resume = Resume.objects.get(id = id)
-	list_of_sections = Section.objects.filter(resume_id = id)
-	list_of_points = Point.objects.filter(resume_id = id)
+	print (request)
 
-	return render(request, 'website/display_resume.html', {'resume':resume, 'section':list_of_sections, 'point':list_of_points})
+	if request.session.get('user') != None:
+
+		logged_user_roll = request.session['user']
+		user = Users.objects.get(roll_number = logged_user_roll)
+
+		if request.method == "POST":
+			
+			resume_id = request.POST['id']
+
+			if Resume.objects.filter(id = resume_id, user = user).count != 0:
+
+				resume = Resume.objects.get(id = resume_id)
+				request.session['resume_id'] = resume_id
+
+				print (resume)
+
+				return render(request, 'website/display_resume.html', {'user':user, 'resume': resume})
+
+		elif request.session.get('resume_id') != None:
+
+			resume = Resume.objects.get(id = request.session['resume_id'])
+			print (resume)
+			return render(request, 'website/display_resume.html', {'user':user, 'resume': resume})
+
+		else:
+
+			return redirect('/home')
+
+	else:
+
+		return redirect('/')
+
 
 @csrf_exempt
 def add_resume_view(request):

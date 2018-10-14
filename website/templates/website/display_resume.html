@@ -1,20 +1,42 @@
-<html>
-<body>
-	<h2>{{ resume.title }}</h2>
-	<h3>{{ resume.timestamp }}</h3>
+{% extends "website/base.html" %}
 
-	{% for sec in section %}
+{% block navbar_items %}
 
-		<h4>{{ sec.title }}</h4>
+<li><a><i class="fas fa-envelope"></i></a></li>
+<li><a><i class="fas fa-bell"></i></a></li>
+<li class="dropdown">
+	<a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fas fa-cog"></i></a>
+    <ul class="dropdown-menu">
+        <li><a href="#?id=2">Profile</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+</li>
+<li><a>{{ user.name }}</a></li>
 
-		{% for pt in point %}
-			{% if pt.section_id.id == sec.id %}
-				<p>{{ pt.content }}</p>
-			{% endif %}
+{% endblock navbar_items %}
 
-		{% endfor %}
+{% block content %}
+<section>
+	<div class="container clearfix">
+		<h1 align="center" class="site-title">{{ resume.title }}</h1><br>
+		<div class="row">
+			<div class="col-sm-1"></div>
+			<div class="col-sm-10">
+				<div class="input-group">
+  					<input type="text" class="form-control">
+  					<span class="input-group-btn">
+    					<button class="btn btn-green" type="button"><i class="fas fa-check"></i></button>
+  					</span>
+  				</div>
+			</div>
+			<div class="col-sm-1"></div>
+		</div>
+	</div>
+</section>
+{% endblock content %}
 
-	{% endfor %}
 
-</body>
-</html>
+{% block javascript %}
+
+
+{% endblock javascript %}

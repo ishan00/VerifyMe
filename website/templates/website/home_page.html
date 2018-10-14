@@ -37,11 +37,32 @@
 		<div id = '_all_'>
 			{% for resume in resume_list %}
 				{% if resume.status == 3 %}
-					<button onclick="openResume({{resume.id}})" class="btn btn-green custom-width">{{resume.title}}</button><br>
+					<div class="btn-group">
+						<button onclick="openResume({{resume.id}})" class="btn btn-green custom-width">{{resume.title}}</button>
+    					<button class="btn btn-green dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+    					<ul class="dropdown-menu dropdown-menu-right">
+        					<li><a>Rename</a></li>
+        					<li><a>Delete</a></li>
+   						</ul>
+  					</div><br>
 				{% elif resume.status == 2 %}
-					<button onclick="openResume({{resume.id}})" class="btn btn-primary custom-width">{{resume.title}}</button><br>
+					<div class="btn-group">
+						<button onclick="openResume({{resume.id}})" class="btn btn-primary custom-width">{{resume.title}}</button>
+    					<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+    					<ul class="dropdown-menu dropdown-menu-right">
+        					<li><a>Rename</a></li>
+        					<li><a>Delete</a></li>
+   						</ul>
+  					</div><br>
 				{% else%}
-					<button onclick="openResume({{resume.id}})" class="btn btn-red custom-width">{{resume.title}}</button><br>
+					<div class="btn-group">
+						<button onclick="openResume({{resume.id}})" class="btn btn-red custom-width">{{resume.title}}</button>
+    					<button class="btn btn-red dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+    					<ul class="dropdown-menu dropdown-menu-right">
+        					<li><a>Rename</a></li>
+        					<li><a>Delete</a></li>
+   						</ul>
+  					</div><br>
 				{% endif %}
 			{% endfor %}
 		</div>
@@ -123,6 +144,9 @@
 		console.log(id);
 		var form = document.createElement("form");
 		var element = document.createElement("input");
+		var att = document.createAttribute("type");
+		att.value = "hidden";
+		element.setAttributeNode(att);
 		form.method = "POST";
 		form.action = "/resume/";
 		element.value = id;
