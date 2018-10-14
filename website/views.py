@@ -2,32 +2,33 @@ from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
+from django.forms.models import model_to_dict
 from django.contrib.auth.decorators import login_required
-from .models import Users,Resume,Section,Point,Conversation,Message,Notification
+from .models import Users,Resume,Section,Point,Conversation,Message,Notification,Passwords
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 
 def login_view(request):
 
-	print (request)
-
-	if request.user.is_authenticated:
-		return redirect('home_view')
+	if request.session.get('user') != None:
+		return redirect('/home')
 
 	if request.method == "POST":
 
 		if request.POST["type"] == "login":
 
 			roll = request.POST["roll"]
-			password = request.POST["password"]
+			pasw = request.POST["password"]
 
-			print (roll, password)
+			if Passwords.objects.filter(roll_number = roll, password = pasw).count() > 0:
 
-			user = authenticate(request, username = roll, password = password)
+				# Valid Login/Password
 
-			if user is not None:
-				login(request, user)
+				user = Users.objects.get(roll_number = roll)
+
+				request.session['user'] = user.roll_number
+
 				return redirect('/home')
 
 			else:
@@ -41,15 +42,14 @@ def login_view(request):
 			pasw = request.POST['password']
 			dept = request.POST['department']
 
-			if User.objects.filter(username = roll).count() == 0:
+			if Users.objects.filter(roll_number = roll).count() == 0:
 
-				user = User.objects.create_user(username = roll, password = pasw)
-				user.save()
+				Passwords.objects.create(roll_number = roll, password = pasw)
+				user = Users.objects.create(roll_number = roll, name = name, department = dept)
 
-				user = Users.objects.create(roll_number = roll, name = name, department = dept, year = 'B3')
+				request.session['user'] = user.roll_number
 
-				login(request, user)
-				return ('/home')
+				return redirect('/home')
 
 			else:
 
@@ -57,46 +57,37 @@ def login_view(request):
 
 	else:
 
-		return render(request, 'website/login.html', {})
-
-def register_user_view(request):
-
-	print (request)
-
-	if request.method == "POST":
-
-		roll = request.POST["roll"]
-		name = request.POST["roll"]
-		password = request.POST["roll"]
-		password1 = request.POST["roll"]
-		department = request.POST["roll"]
+		return render(request, 'website/login.html', {})		
 
 
 def logout_view(request):
-	logout(request)
-	return redirect('login_view')
+
+	if request.session.get('user') != None:
+		del request.session['user']
+
+	return redirect('/')
 
 def home_view(request):
 
-	if request.user.is_authenticated:
+	if request.session.get('user') != None:
+
+		logged_user_roll = request.session['user']
 		
-		curr_user = int(request.user.username)
-		
-		resume_list = Resume.objects.filter(user = curr_user).order_by("timestamp")
+		user = Users.objects.get(roll_number = logged_user_roll)
+		resume_list = Resume.objects.filter(user = user).order_by("timestamp")
+
 		return render(request, 'website/home_page.html', {'user':user, 'resume_list': resume_list})
 
 	else:
 
-		return render(request, 'website/login.html', {})
+		return redirect('/')
 
-
-#@login_required()
+@csrf_exempt
 def create_new_resume(request):
 	
 	return render(request, 'website/home_page.html', {})
 
 
-#@login_required()
 @csrf_exempt
 def view_resume(request):
 
@@ -108,31 +99,36 @@ def view_resume(request):
 
 	return render(request, 'website/display_resume.html', {'resume':resume, 'section':list_of_sections, 'point':list_of_points})
 
-
-#@login_required()
 @csrf_exempt
 def add_resume_view(request):
 	
-	print(request.POST)
-	title = request.POST["title"]
-	rollNo = request.user.username
-	user = Users.objects.get(roll_number=rollNo)
-	resume = Resume(title=title, user=user)
-	resume.save()
-	print(title)
-	print(resume.id)
-	return JsonResponse({'title':title, 'id':resume.id})
+	if request.session.get('user') != None:
 
+		if request.method == "POST":
 
-#@login_required()
+			logged_user_roll = request.session['user']
+			user = Users.objects.get(roll_number = logged_user_roll)
+
+			title = request.POST['title']
+
+			new_resume = Resume.objects.create(user = user, title = title)
+			
+			resume_list = Resume.objects.filter(user = user).order_by("timestamp")
+
+			resume_list = [ model_to_dict(obj) for obj in resume_list]
+
+			return JsonResponse({'resume':resume_list})
+
+	else:
+
+		return redirect('/')
+
 def view_messages(request):
 	user = 1
 	conv_id = Conversation.objects.filter(Q(user1 = user) | Q(user2 = user))
 	messages = Message.objects.filter(conversation_id__in=conv_id)
 	return render(request, 'website/display_messages.html', {'user':user, 'messages':messages, 'conversations':conv_id})
 
-
-#@login_required()
 def view_notifications(request):
 	notifications = Notification.objects.all()
 	return render(request, 'website/display_notifications.html', {'notifications':notifications})

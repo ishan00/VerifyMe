@@ -1,70 +1,123 @@
 {% extends "website/base.html" %}
 
 {% block navbar_items %}
+
 <li><a><i class="fas fa-envelope"></i></a></li>
 <li><a><i class="fas fa-bell"></i></a></li>
-<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fas fa-cog"></i></a>
-        <ul class="dropdown-menu">
-          <li><a href="#?id=2">Profile</a></li>
-          <li><a href="/logout">Logout</a></li>
-        </ul>
-      </li>
+<li class="dropdown">
+	<a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fas fa-cog"></i></a>
+    <ul class="dropdown-menu">
+        <li><a href="#?id=2">Profile</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+</li>
+<li><a>{{ user.name }}</a></li>
 
-<li><a>{{user.name}}</a></li>
 {% endblock navbar_items %}
+
+
 {% block content %}
 <section>
 	<div class="container clearfix">
 		<div class="content">
-			<h1 align="center" class="site-title">{{user.name}}</h1><br>
+			<h1 align="center" class="site-title">{{ user.name }}</h1><br>
 		</div>
-	<div>
-	<!-- <form id = "ResumeForm"  action='' method='GET' onsubmit="addResume(this.title.value); return false;" style='display: none;'> -->
-	<input type="text" id='title' name="title" style='display:none;'><br>
-	<button id='submit' class="btn btn-primary" style='display:none;' onclick="addResume(document.getElementById('title').value)">Create Resume</button><br>
-	<!-- <input id='submit' type="submit" value="Create" style='display:none;'> -->
-	</div>
-	<button id='Show' type="submit"  class="btn btn-primary" onclick="displayForm()">Add resume</button><br>
-	<div id = 'newResume'>
-	{% for resume in resume_list %}
-	{% if resume.status > 2 %}
-	<button onclick="openResume({{resume.id}})" class="btn btn-green">{{resume.title}}</button><br>
-	{% elif resume.status > 1 %}
-	<button onclick="openResume({{resume.id}})" class="btn btn-primary">{{resume.title}}</button><br>
-	{% else%}
-	<button onclick="openResume({{resume.id}})" class="btn btn-red">{{resume.title}}</button><br>
-	{% endif %}
-	{% endfor %}
-	</div>
+		<div>
+			<button id='_show_' type="submit" class="btn btn-primary transition-visible custom-width">Add resume</button><br><br>
+			<p id = "_new_resume_"></p>
+			<div class = "form-group">
+				<input id='_title_' type="text" name="title" class="form-control transition-hidden" placeholder="Resume Name">
+			</div>
+			<button id='_create_' class="btn btn-primary transition-hidden custom-width">Create Resume</button>
+			<button id='_cancel_' class="btn btn-red transition-hidden custom-width">Cancel</button>	
+		</div>
+		
+		<hr>
+		
+		<div id = '_all_'>
+			{% for resume in resume_list %}
+				{% if resume.status == 3 %}
+					<button onclick="openResume({{resume.id}})" class="btn btn-green custom-width">{{resume.title}}</button><br>
+				{% elif resume.status == 2 %}
+					<button onclick="openResume({{resume.id}})" class="btn btn-primary custom-width">{{resume.title}}</button><br>
+				{% else%}
+					<button onclick="openResume({{resume.id}})" class="btn btn-red custom-width">{{resume.title}}</button><br>
+				{% endif %}
+			{% endfor %}
+		</div>
 	</div>
 </section>
+
+{% endblock content %}
+
+
+{% block javascript %}
+
 <script type="text/javascript">
-	
-	function addResume(title){
-		console.log(title);
-		document.getElementById('title').style.display = 'none';
-		document.getElementById('submit').style.display = 'none';
-		document.getElementById('Show').style.display = 'block';
-		var xhttp = new XMLHttpRequest();
-		var params = 'title='+title;
-		xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-		  var data = JSON.parse(this.responseText);
-		  document.getElementById("newResume").innerHTML = '<button onclick="openResume(' + data.id + ')" class="btn btn-primary">'+ data.title + '</button><br> '+ document.getElementById("newResume").innerHTML;
-		}
-		};
-		
-		xhttp.open("POST", "/add_resume/", true);
-		xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-		xhttp.send(params);
-	}
+	$(document).ready(function(){
+    	$("#_show_").click(function(){
+    		console.log("Clicked");
+        	$('#_title_').removeClass('transition-hidden').addClass('transition-visible');
+        	$('#_create_').removeClass('transition-hidden').addClass('transition-visible');
+        	$('#_cancel_').removeClass('transition-hidden').addClass('transition-visible');
+        	$('#_show_').removeClass('transition-visible').addClass('transition-hidden');
+        });
+    	$("#_cancel_").click(function(){
+        	$('#_title_').removeClass('transition-visible').addClass('transition-hidden');
+        	$('#_create_').removeClass('transition-visible').addClass('transition-hidden');
+        	$('#_cancel_').removeClass('transition-visible').addClass('transition-hidden');
+        	$('#_show_').removeClass('transition-hidden').addClass('transition-visible');
+        	document.getElementById('_new_resume_').innerHTML = "";
+    	});
+    	$("#_create_").click(function(){
+    		var t = document.getElementById('_title_').value;
+    		if (t == ""){
+    			document.getElementById('_new_resume_').innerHTML = 'Title cannot be empty';
+    		}
+    		else{
 
-	function displayForm(){
-		document.getElementById('title').style.display = 'block';
-		document.getElementById('submit').style.display = 'block';
-		document.getElementById('Show').style.display = 'none';
+    			console.log(t);
+    			
+    			var xhttp = new XMLHttpRequest();;
+    			var params = 'title='+t;
+				
+				xhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
 
-	}
+				  		var data = JSON.parse(this.responseText);
+				  		var div_content = "";
+
+				  		document.getElementById("_all_").innerHTML = "";
+				  	
+				  		for (var index = 0; index < data.resume.length; ++index) {
+				  			console.log(data.resume[index].status);
+				  			if (data.resume[index].status == 3){
+				  				div_content += '<button onclick="openResume(' + data.resume[index].id + ')" class="btn btn-green custom-width">' + data.resume[index].title + '</button><br>';	
+				  			}
+				  			else if (data.resume[index].status == 2){
+				  				div_content += '<button onclick="openResume(' + data.resume[index].id + ')" class="btn btn-primary custom-width">' + data.resume[index].title + '</button><br>';	
+				  			}
+				  			else{
+				  				div_content += '<button onclick="openResume(' + data.resume[index].id + ')" class="btn btn-red custom-width">' + data.resume[index].title + '</button><br>';	
+				  			}
+				  		}
+
+				  		document.getElementById("_all_").innerHTML = div_content;
+
+				  		$('#_title_').removeClass('transition-visible').addClass('transition-hidden');
+		        		$('#_create_').removeClass('transition-visible').addClass('transition-hidden');
+		        		$('#_cancel_').removeClass('transition-visible').addClass('transition-hidden');
+		        		$('#_show_').removeClass('transition-hidden').addClass('transition-visible');
+		        		document.getElementById('_new_resume_').innerHTML = "";
+		        	}
+				};
+				
+				xhttp.open("POST", "/add_resume/", true);
+				xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+				xhttp.send(params);
+    		}
+    	});
+	});
 
 	function openResume(id){
 		console.log(id);
@@ -80,4 +133,7 @@
 
 	}
 </script>
-{% endblock content %}
+
+{% endblock javascript %}
+
+

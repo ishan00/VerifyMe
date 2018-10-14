@@ -25,12 +25,22 @@ LIST_OF_YEARS = (
 	('M2','M.Tech. 2nd Year'),
 )
 
+class Passwords(models.Model):
+
+	roll_number = models.CharField(max_length = 30)
+
+	password = models.CharField(max_length = 30)
+
+	def __str__(self):
+		return str(self.id)
+
+
 class Users(models.Model):
 
 	roll_number = models.CharField(max_length = 30)
 	name = models.CharField(max_length = 50)
 	department = models.CharField(max_length = 2, choices = LIST_OF_DEPARTMENTS)
-	year = models.CharField(max_length = 2,choices = LIST_OF_YEARS)
+	#year = models.CharField(max_length = 2,choices = LIST_OF_YEARS)
 
 	privilege = models.BooleanField(editable = False, default = False)
 	position = models.CharField(max_length = 100, editable = False, default = '')
