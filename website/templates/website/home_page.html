@@ -113,13 +113,37 @@
 				  		for (var index = 0; index < data.resume.length; ++index) {
 				  			console.log(data.resume[index].status);
 				  			if (data.resume[index].status == 3){
-				  				div_content += '<button onclick="openResume(' + data.resume[index].id + ')" class="btn btn-green custom-width">' + data.resume[index].title + '</button><br>';	
+				  				div_content += `<div class = "btn-group">
+				  									<button onclick="openResume(` + data.resume[index].id + `)" class="btn btn-green custom-width">` + data.resume[index].title + `</button>
+				  									<button class="btn btn-green dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+				  									<ul class="dropdown-menu dropdown-menu-right">
+        												<li><a>Rename</a></li>
+        												<li><a>Delete</a></li>
+   													</ul>
+   												</div>
+  												<br>`;	
 				  			}
 				  			else if (data.resume[index].status == 2){
-				  				div_content += '<button onclick="openResume(' + data.resume[index].id + ')" class="btn btn-primary custom-width">' + data.resume[index].title + '</button><br>';	
-				  			}
+				  				div_content += `<div class = "btn-group">
+				  									<button onclick="openResume(` + data.resume[index].id + `)" class="btn btn-primary custom-width">` + data.resume[index].title + `</button>
+				  									<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+				  									<ul class="dropdown-menu dropdown-menu-right">
+        												<li><a>Rename</a></li>
+        												<li><a>Delete</a></li>
+   													</ul>
+   												</div>
+  												<br>`;	
+  							}
 				  			else{
-				  				div_content += '<button onclick="openResume(' + data.resume[index].id + ')" class="btn btn-red custom-width">' + data.resume[index].title + '</button><br>';	
+				  				div_content += `<div class = "btn-group">
+				  									<button onclick="openResume(` + data.resume[index].id + `)" class="btn btn-red custom-width">` + data.resume[index].title + `</button>
+				  									<button class="btn btn-red dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+				  									<ul class="dropdown-menu dropdown-menu-right">
+        												<li><a>Rename</a></li>
+        												<li><a>Delete</a></li>
+   													</ul>
+   												</div>
+  												<br>`;		
 				  			}
 				  		}
 
