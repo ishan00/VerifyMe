@@ -22,6 +22,10 @@
     margin-bottom: 10px;
 }
 
+.custom-space {
+    margin-bottom: 10px !important;
+}
+
 .dropdown-width {
     width: 60px !important;
     margin-bottom: 10px;

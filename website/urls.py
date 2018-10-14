@@ -9,7 +9,7 @@ urlpatterns = [
 	path('notifications/', views.view_notifications, name = 'view_notifications'),
 	path('logout/', views.logout_view, name = 'logout_view'),
 	path('add_resume/', views.add_resume_view, name = 'add_resume_view'),
-	path('add_section/', views.home_view, name = 'logout_view'),
-	path('add_point/', views.home_view, name = 'logout_view'),
+	path('add_section/', views.add_section_view, name = 'add_section_view'),
+	path('add_point/', views.add_point_view, name = 'add_point_view'),
 	path('add_message/', views.home_view, name = 'logout_view'),
 ]

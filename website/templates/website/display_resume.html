@@ -22,14 +22,68 @@
 		<div class="row">
 			<div class="col-sm-1"></div>
 			<div class="col-sm-10">
-				
-				<!-- Single Point -->
-				<div class="input-group mb-3">
-  					<input type="text" class="form-control">
+				<!-- Sections -->
+				{% for section in sections %}
+				<center><div class="btn-group" style="margin-top: 10px;">
+						<button class="btn btn-primary custom-width">{{section.title}}</button>
+    					<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+    					<ul class="dropdown-menu dropdown-menu-right">
+        					<li><a>Rename</a></li>
+        					<li><a>Delete</a></li>
+   						</ul>
+  					</div></center>
+  				{% for point in section.points %}
+  				<div class="input-group mb-3" style="margin-bottom: 5px;">
+  					<input type="text" class="form-control" value="{{ point.content }}" readonly>
   					<span class="input-group-btn">
     					<button class="btn btn-green" type="button"><i class="fas fa-check"></i></button>
   					</span>
   				</div>
+  				{% endfor %}
+  				<div class="input-group mb-3" style="margin-bottom: 5px;">
+  					<form method='post' action = '/add_point/' style="display:inline;">
+  					<input type="hidden" value="{{section.id}}" name='section_id' readonly>
+  					<input type="text" class="form-control" name='content'>
+  					<span class="input-group-btn">
+    					<button class="btn btn-green" type="button submit"><i class="fas fa-check"></i></button>
+  					</span>
+  					</form>
+  				</div>
+				{% endfor %}
+				<!-- Single Point -->
+
+  				<center><div class="btn-group" style="margin-top: 25px;">
+  				<button type="button" class="btn btn-primary custom-width" data-toggle="modal" data-target="#myModal">Add Section</button>
+  				</div></center>
+				  <!-- Modal -->
+				  <div class="modal fade" id="myModal" role="dialog">
+				    <div class="modal-dialog">
+				    
+				      <!-- Modal content-->
+				      <div class="modal-content">
+				        <div class="modal-header">
+				          <button type="button" class="close" data-dismiss="modal">&times;</button>
+				          <h4 class="modal-title">Add Section</h4>
+				        </div>
+				        <div class="modal-body">
+				        <form method='POST' action='/add_section/'>
+				          Title: <input type=text id=section-title name='title'><br>
+				          Type: <select class="form-control" placeholder="Department" name="type">
+							<option value="">Choose a type</option>
+							<option value="CS">Bullet</option>
+							<option value="EE">Block</option>
+							<option value="EE">Block</option>
+						</select>
+						<div class='modal-footer'>
+				          <input type=submit id="_create_" class="btn btn-primary">
+				  		</div>
+				  		</form>
+
+				      </div>
+
+				      
+				    </div>
+				  </div>
 
   				<!-- Block Point -->
 

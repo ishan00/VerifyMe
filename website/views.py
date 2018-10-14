@@ -74,21 +74,19 @@ def home_view(request):
 		logged_user_roll = request.session['user']
 		
 		user = Users.objects.get(roll_number = logged_user_roll)
-		resume_list = Resume.objects.filter(user = user).order_by("timestamp")
+
+		resume_list = Resume.objects.filter(user = user).order_by("-timestamp")
 
 		if request.session.get('resume_id') != None:
 			del request.session['resume_id']
 
-		return render(request, 'website/home_page.html', {'user':user, 'resume_list': resume_list})
+		request_list = Request.objects.filter(user_receiver = user)
+
+		return render(request, 'website/home_page.html', {'user':user, 'resume_list': resume_list, 'request_list': request_list})
 
 	else:
 
 		return redirect('/')
-
-@csrf_exempt
-def create_new_resume(request):
-	
-	return render(request, 'website/home_page.html', {})
 
 
 @csrf_exempt
@@ -101,7 +99,22 @@ def view_resume(request):
 		logged_user_roll = request.session['user']
 		user = Users.objects.get(roll_number = logged_user_roll)
 
-		if request.method == "POST":
+
+		if request.session.get('resume_id') != None:
+
+			resume = Resume.objects.get(id = request.session['resume_id'])
+			print (resume)
+			sections = Section.objects.filter(resume = resume)
+			section_list = [model_to_dict(obj) for obj in sections]
+			for i in range(len(sections)):
+				points = Point.objects.filter(section = sections[i])
+				section_list[i]['points'] = [ model_to_dict(obj) for obj in points]
+
+			print(section_list)
+			return render(request, 'website/display_resume.html', {'user':user, 'resume': resume, 'sections' : section_list})
+
+
+		elif request.method == "POST":
 			
 			resume_id = request.POST['id']
 
@@ -111,14 +124,14 @@ def view_resume(request):
 				request.session['resume_id'] = resume_id
 
 				print (resume)
+				sections = Section.objects.filter(resume = resume)
+				section_list = [model_to_dict(obj) for obj in sections]
+				for i in range(len(sections)):
+					points = Point.objects.filter(section = sections[i])
+					section_list[i]['points'] = [ model_to_dict(obj) for obj in points]
 
-				return render(request, 'website/display_resume.html', {'user':user, 'resume': resume})
-
-		elif request.session.get('resume_id') != None:
-
-			resume = Resume.objects.get(id = request.session['resume_id'])
-			print (resume)
-			return render(request, 'website/display_resume.html', {'user':user, 'resume': resume})
+				print(section_list)
+				return render(request, 'website/display_resume.html', {'user':user, 'resume': resume, 'sections' : section_list})
 
 		else:
 
@@ -147,8 +160,58 @@ def add_resume_view(request):
 
 			resume_list = [ model_to_dict(obj) for obj in resume_list]
 
+
 			return JsonResponse({'resume':resume_list})
 
+	else:
+
+		return redirect('/')
+
+
+@csrf_exempt
+def add_point_view(request):
+	
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+
+			logged_user_roll = request.session['user']
+			user = Users.objects.get(roll_number = logged_user_roll)
+
+			content = request.POST['content']
+			section_id = request.POST['section_id']
+
+			section = Section.objects.get(id=section_id)
+			new_Point = Point.objects.create(section = section, content = content)
+			
+			return redirect('/resume')
+
+	else:
+
+		return redirect('/')
+
+@csrf_exempt
+def add_section_view(request):
+	
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+
+			if request.session.get('resume_id') != None:
+				resume = Resume.objects.get(id = request.session['resume_id'])
+
+			title = request.POST['title']
+			# type = re
+
+			new_section = Section.objects.create(resume = resume, title = title)
+
+			sections = Section.objects.filter(resume = resume)
+			section_list = [model_to_dict(obj) for obj in sections]
+			for i in range(len(sections)):
+				points = Point.objects.filter(section = sections[i])
+				section_list[i]['points'] = [ model_to_dict(obj) for obj in points]
+
+			return redirect('/resume')
 	else:
 
 		return redirect('/')

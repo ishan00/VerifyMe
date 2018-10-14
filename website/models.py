@@ -42,8 +42,8 @@ class Users(models.Model):
 	department = models.CharField(max_length = 2, choices = LIST_OF_DEPARTMENTS)
 	#year = models.CharField(max_length = 2,choices = LIST_OF_YEARS)
 
-	privilege = models.BooleanField(editable = False, default = False)
-	position = models.CharField(max_length = 100, editable = False, default = '')
+	privilege = models.BooleanField(default = False)
+	position = models.CharField(max_length = 100, default = '')
 
 	def __str__(self):
 		return str(self.id)
@@ -53,7 +53,7 @@ class Resume(models.Model):
 	user = models.ForeignKey('Users', on_delete = models.CASCADE)
 	title = models.CharField(max_length = 100, default = '')
 
-	timestamp = models.DateField(null = True)
+	timestamp = models.DateTimeField(auto_now_add = True, null = True)
 	status = models.IntegerField(default = 2) #1 for rejected, 2 for pending, 3 for verified
 
 	def __str__(self):
@@ -61,7 +61,7 @@ class Resume(models.Model):
 
 class Section(models.Model):
 
-	resume_id = models.ForeignKey('Resume', on_delete = models.CASCADE)
+	resume = models.ForeignKey('Resume', on_delete = models.CASCADE)
 	title = models.CharField(max_length = 100)
 
 	def __str__(self):
@@ -69,30 +69,35 @@ class Section(models.Model):
 
 class Point(models.Model):
 
-	resume_id = models.ForeignKey('Resume', on_delete = models.CASCADE)
-	section_id = models.ForeignKey('Section', on_delete = models.CASCADE)
+	#resume_id = models.ForeignKey('Resume', on_delete = models.CASCADE)
+	section = models.ForeignKey('Section', on_delete = models.CASCADE)
 
-	position_in_list = models.IntegerField(editable = False, default = 0)
+	position = models.IntegerField(editable = False, default = 0)
 
-	point_type = models.CharField(max_length = 1, choices = POINT_TYPE, editable = False, default = 'N')
+	type = models.CharField(max_length = 1, choices = POINT_TYPE, editable = False, default = 'N')
+
+	status = models.CharField(max_length = 1, choices = POINT_TYPE, editable = False, default = 'P')
 	
 	content = models.TextField(default = '')
 
-	timestamp = models.DateField(null = True)
+	comment = models.TextField(default = '')
+
+	timestamp = models.DateTimeField(auto_now_add = True, null = True)
+
+	def __str__(self):
+		return str(self.id)
 
 class Request(models.Model):
 	
-	section_id = models.ForeignKey('Section', on_delete = models.CASCADE)
 	user_sender = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_request_sender')
 	user_receiver = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_request_receiver')
 
-	request_status = models.CharField(max_length = 1, choices = POINT_TYPE, editable = False, default = 'P')
-
 	point = models.ForeignKey('Point', on_delete = models.CASCADE)
 
-	point_comment = models.TextField(default = '')
+	timestamp = models.DateTimeField(auto_now_add = True, null = True)
 
-	timestamp = models.DateField(null = True)
+	def __str__(self):
+		return str(self.id)
 
 class Conversation(models.Model):
 
