@@ -24,31 +24,31 @@
 			<div class="col-sm-10">
 				<!-- Sections -->
 				{% for section in sections %}
-				<center><div class="btn-group" style="margin-top: 10px;">
-						<button class="btn btn-primary custom-width">{{section.title}}</button>
-    					<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
-    					<ul class="dropdown-menu dropdown-menu-right">
-        					<li><a>Rename</a></li>
-        					<li><a>Delete</a></li>
-   						</ul>
-  					</div></center>
-  				{% for point in section.points %}
-  				<div class="input-group mb-3" style="margin-bottom: 5px;">
-  					<input type="text" class="form-control" value="{{ point.content }}" readonly>
-  					<span class="input-group-btn">
-    					<button class="btn btn-green" type="button"><i class="fas fa-check"></i></button>
-  					</span>
-  				</div>
-  				{% endfor %}
-  				<div class="input-group mb-3" style="margin-bottom: 5px;">
-  					<form method='post' action = '/add_point/' style="display:inline;">
-  					<input type="hidden" value="{{section.id}}" name='section_id' readonly>
-  					<input type="text" class="form-control" name='content'>
-  					<span class="input-group-btn">
-    					<button class="btn btn-green" type="button submit"><i class="fas fa-check"></i></button>
-  					</span>
-  					</form>
-  				</div>
+					<center>
+						<div class="btn-group" style="margin-top: 10px; margin-bottom: 10px;">
+							<button class="btn btn-primary">{{section.title}}</button>
+	    					<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+	    					<ul class="dropdown-menu dropdown-menu-right">
+	        					<li><a>Rename</a></li>
+	        					<li><a>Delete</a></li>
+	   						</ul>
+	  					</div>
+  					</center>
+	  				{% for point in section.points %}
+		  				<div class="input-group mb-3" style="margin-bottom: 5px;">
+		  					<input type="text" class="form-control" value="{{ point.content }}" readonly>
+		  					<span class="input-group-btn">
+		    					<button class="btn btn-green" type="button"><i class="fas fa-check"></i></button>
+		  					</span>
+		  				</div>
+	  				{% endfor %}
+	  				<div class="input-group mb-3" style="margin-bottom: 5px;">
+	  					<input type="text" class="form-control" id = "{{section.id}}">
+	  					<span class="input-group-btn">
+	    					<button class="btn btn-green" type="submit" onclick="add_point({{section.id}})"><i class="fas fa-check"></i></button>
+	  					</span>
+		  			</div>
+
 				{% endfor %}
 				<!-- Single Point -->
 
@@ -98,6 +98,37 @@
 
 
 {% block javascript %}
+	<script type="text/javascript">
 
+		function add_point(id){
+			var form = document.createElement("form");
+			var element1 = document.createElement("input");
+			var element2 = document.createElement("input");
+			
+			var att1 = document.createAttribute("type");
+			att1.value = "hidden";
+			
+			var att2 = document.createAttribute("type");
+			att2.value = "hidden";
 
+			element1.setAttributeNode(att1);
+			element2.setAttributeNode(att2);
+			
+			form.method = "POST";
+			form.action = "/add_point/";
+			
+			element1.value = document.getElementById(id).value;
+			element1.name = "content";
+
+			element2.value = id;
+			element2.name = 'section_id';
+
+			form.appendChild(element1);
+			form.appendChild(element2);
+
+			document.body.appendChild(form);
+			form.submit();
+
+		}
+	</script>
 {% endblock javascript %}

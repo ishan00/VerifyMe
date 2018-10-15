@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from django.forms.models import model_to_dict
 from django.contrib.auth.decorators import login_required
-from .models import Users,Resume,Section,Point,Conversation,Message,Notification,Passwords
+from .models import Users,Resume,Section,Point,Conversation,Message,Notification,Passwords,Request
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -175,11 +175,15 @@ def add_point_view(request):
 
 		if request.method == "POST":
 
+			print (request)
+
 			logged_user_roll = request.session['user']
 			user = Users.objects.get(roll_number = logged_user_roll)
 
 			content = request.POST['content']
 			section_id = request.POST['section_id']
+
+			print (content,section_id)
 
 			section = Section.objects.get(id=section_id)
 			new_Point = Point.objects.create(section = section, content = content)
