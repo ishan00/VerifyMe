@@ -1,18 +1,7 @@
 {% extends "website/base.html" %}
 
 {% block navbar_items %}
-
-<li><a href="/messages"><i class="fas fa-envelope"></i></a></li>
-<li><a><i class="fas fa-bell"></i></a></li>
-<li class="dropdown">
-	<a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fas fa-cog"></i></a>
-    <ul class="dropdown-menu">
-        <li><a href="#?id=2">Profile</a></li>
-        <li><a href="/logout">Logout</a></li>
-    </ul>
-</li>
-<li><a>{{ user.name }}</a></li>
-
+	{% include "website/navbar.html" %}
 {% endblock navbar_items %}
 
 {% block content %}

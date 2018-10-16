@@ -225,7 +225,10 @@ def view_messages(request):
 
 	if request.session.get('user') != None:
 
-		return render(request, 'website/messages.html', {})
+		logged_user_roll = request.session['user']
+		user = Users.objects.get(roll_number = logged_user_roll)
+
+		return render(request, 'website/messages.html', {'user':user})
 
 		'''
 		if request.session.get('resume_id') != None:
