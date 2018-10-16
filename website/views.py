@@ -220,11 +220,33 @@ def add_section_view(request):
 
 		return redirect('/')
 
+@csrf_exempt
 def view_messages(request):
-	user = 1
-	conv_id = Conversation.objects.filter(Q(user1 = user) | Q(user2 = user))
-	messages = Message.objects.filter(conversation_id__in=conv_id)
-	return render(request, 'website/display_messages.html', {'user':user, 'messages':messages, 'conversations':conv_id})
+
+	if request.session.get('user') != None:
+
+		return render(request, 'website/messages.html', {})
+
+		'''
+		if request.session.get('resume_id') != None:
+			resume = Resume.objects.get(id = request.session['resume_id'])
+
+		title = request.POST['title']
+		# type = re
+
+		new_section = Section.objects.create(resume = resume, title = title)
+
+		sections = Section.objects.filter(resume = resume)
+		section_list = [model_to_dict(obj) for obj in sections]
+		for i in range(len(sections)):
+			points = Point.objects.filter(section = sections[i])
+			section_list[i]['points'] = [ model_to_dict(obj) for obj in points]
+
+		return redirect('/resume')
+		'''
+	else:
+
+		return redirect('/')
 
 def view_notifications(request):
 	notifications = Notification.objects.all()
