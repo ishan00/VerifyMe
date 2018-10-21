@@ -12,50 +12,27 @@
     </div>
     -->
     <!-- end notify title -->
-    <!-- notify content -->
+
+    <!-- notification content -->
     <div class="drop-content">
+    {% for notification in notifications %}
         <li>
             <div class="col-md-3 col-sm-3 col-xs-3"><div class="notify-img"><img src="http://placehold.it/45x45" alt=""></div></div>
             <div class="col-md-9 col-sm-9 col-xs-9 pd-l0">
-                <i class="fa fa-dot-circle-o"></i>
-                <span>Top Line of Notification</span>
-                <hr>
-                <p class="time">Bottom Line of Notification</p>
+                <span>{{ notification.user_sender.name }} verified the below in {{ notification.point.section.title }} of {{ notification.point.section.resume.title }}</span><br>
+                <p class="time">{{ notification.point.content }}</p>
             </div>
         </li>
-        <li>
-            <div class="col-md-3 col-sm-3 col-xs-3"><div class="notify-img"><img src="http://placehold.it/45x45" alt=""></div></div>
-            <div class="col-md-9 col-sm-9 col-xs-9 pd-l0">
-                <i class="fa fa-dot-circle-o"></i>
-                <span>Top Line of Notification</span>
-                <hr>
-                <p class="time">Bottom Line of Notification</p>
-            </div>
-        </li>
-        <li>
-            <div class="col-md-3 col-sm-3 col-xs-3"><div class="notify-img"><img src="http://placehold.it/45x45" alt=""></div></div>
-            <div class="col-md-9 col-sm-9 col-xs-9 pd-l0">
-                <i class="fa fa-dot-circle-o"></i>
-                <span>Top Line of Notification</span>
-                <hr>
-                <p class="time">Bottom Line of Notification</p>
-            </div>
-        </li>
-        <li>
-            <div class="col-md-3 col-sm-3 col-xs-3"><div class="notify-img"><img src="http://placehold.it/45x45" alt=""></div></div>
-            <div class="col-md-9 col-sm-9 col-xs-9 pd-l0">
-                <i class="fa fa-dot-circle-o"></i>
-                <span>Top Line of Notification</span>
-                <hr>
-                <p class="time">Bottom Line of Notification</p>
-            </div>
-        </li>
+    {% endfor %}
     </div>
-    <div class="notify-drop-footer text-center">
-        <a href="">Footer of Notification</a>
-    </div>
+    {% if notifications|length == 0 %}
+        <div class="notify-drop-footer text-center">
+            <a href="">No notifications to show :(</a>
+        </div>
+    {% endif %}
     </ul>
 </li>
+    <!-- end notification -->
 <li class="dropdown">
     <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fas fa-cog"></i></a>
     <ul class="dropdown-menu">

@@ -82,7 +82,9 @@ def home_view(request):
 
 		request_list = Request.objects.filter(user_receiver = user)
 
-		return render(request, 'website/home_page.html', {'user':user, 'resume_list': resume_list, 'request_list': request_list})
+		notifications = Notification.objects.filter(user_receiver = user)
+
+		return render(request, 'website/home_page.html', {'user':user, 'resume_list': resume_list, 'request_list': request_list, 'notifications':notifications})
 
 	else:
 
@@ -91,8 +93,6 @@ def home_view(request):
 
 @csrf_exempt
 def view_resume(request):
-
-	print (request)
 
 	if request.session.get('user') != None:
 
@@ -103,15 +103,16 @@ def view_resume(request):
 		if request.session.get('resume_id') != None:
 
 			resume = Resume.objects.get(id = request.session['resume_id'])
-			print (resume)
+			
 			sections = Section.objects.filter(resume = resume)
 			section_list = [model_to_dict(obj) for obj in sections]
 			for i in range(len(sections)):
 				points = Point.objects.filter(section = sections[i])
 				section_list[i]['points'] = [ model_to_dict(obj) for obj in points]
 
-			print(section_list)
-			return render(request, 'website/display_resume.html', {'user':user, 'resume': resume, 'sections' : section_list})
+			notifications = Notification.objects.filter(user_receiver = user)
+
+			return render(request, 'website/display_resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications})
 
 
 		elif request.method == "POST":
@@ -123,15 +124,15 @@ def view_resume(request):
 				resume = Resume.objects.get(id = resume_id)
 				request.session['resume_id'] = resume_id
 
-				print (resume)
 				sections = Section.objects.filter(resume = resume)
 				section_list = [model_to_dict(obj) for obj in sections]
 				for i in range(len(sections)):
 					points = Point.objects.filter(section = sections[i])
 					section_list[i]['points'] = [ model_to_dict(obj) for obj in points]
 
-				print(section_list)
-				return render(request, 'website/display_resume.html', {'user':user, 'resume': resume, 'sections' : section_list})
+				notifications = Notification.objects.filter(user_receiver = user)
+
+				return render(request, 'website/display_resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications})
 
 		else:
 
@@ -228,7 +229,9 @@ def view_messages(request):
 		logged_user_roll = request.session['user']
 		user = Users.objects.get(roll_number = logged_user_roll)
 
-		return render(request, 'website/messages.html', {'user':user})
+		notifications = Notification.objects.filter(user_receiver = user)
+
+		return render(request, 'website/messages.html', {'user':user, 'notifications':notifications})
 
 		'''
 		if request.session.get('resume_id') != None:

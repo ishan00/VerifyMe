@@ -104,6 +104,9 @@ class Conversation(models.Model):
 	user1 = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_conversation_user1')
 	user2 = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_conversation_user2')
 
+	def __str__(self):
+		return str(self.id)
+
 
 class Message(models.Model):
 
@@ -112,7 +115,10 @@ class Message(models.Model):
 
 	content = models.TextField(default = '')
 
-	timestamp = models.DateField()
+	timestamp = models.DateTimeField(auto_now_add = True, null = True)
+
+	def __str__(self):
+		return str(self.id)
 
 class Notification(models.Model):
 
@@ -123,7 +129,10 @@ class Notification(models.Model):
 
 	point = models.ForeignKey('Point', on_delete = models.CASCADE)
 
-	timestamp = models.DateField(null = True)
+	timestamp = models.DateTimeField(auto_now_add = True, null = True)
+
+	def __str__(self):
+		return str(self.id)
 
 
 
