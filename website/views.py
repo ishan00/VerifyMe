@@ -112,7 +112,7 @@ def view_resume(request):
 
 			notifications = Notification.objects.filter(user_receiver = user)
 
-			return render(request, 'website/display_resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications})
+			return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications})
 
 
 		elif request.method == "POST":
@@ -132,7 +132,7 @@ def view_resume(request):
 
 				notifications = Notification.objects.filter(user_receiver = user)
 
-				return render(request, 'website/display_resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications})
+				return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications})
 
 		else:
 
@@ -157,12 +157,13 @@ def add_resume_view(request):
 
 			new_resume = Resume.objects.create(user = user, title = title)
 			
-			resume_list = Resume.objects.filter(user = user).order_by("timestamp")
+			#resume_list = Resume.objects.filter(user = user).order_by("timestamp")
 
-			resume_list = [ model_to_dict(obj) for obj in resume_list]
+			#resume_list = [ model_to_dict(obj) for obj in resume_list]
 
+			#return JsonResponse({'resume':resume_list})
 
-			return JsonResponse({'resume':resume_list})
+			return redirect('/home')
 
 	else:
 
@@ -297,7 +298,3 @@ def view_messages(request):
 	else:
 
 		return redirect('/')
-
-def view_notifications(request):
-	notifications = Notification.objects.all()
-	return render(request, 'website/display_notifications.html', {'notifications':notifications})

@@ -87,7 +87,7 @@
     		else{
 
     			console.log(t);
-    			
+    			/*
     			var xhttp = new XMLHttpRequest();;
     			var params = 'title='+t;
 				
@@ -149,6 +149,20 @@
 				xhttp.open("POST", "/add_resume/", true);
 				xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 				xhttp.send(params);
+				*/
+
+				var form = document.createElement("form");
+				var element = document.createElement("input");
+				var att = document.createAttribute("type");
+				att.value = "hidden";
+				element.setAttributeNode(att);
+				form.method = "POST";
+				form.action = "/add_resume/";
+				element.value = t;
+				element.name = "title";
+				form.appendChild(element);
+				document.body.appendChild(form);
+				form.submit();
     		}
     	});
 	});
