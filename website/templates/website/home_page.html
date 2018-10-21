@@ -27,29 +27,29 @@
 			{% for resume in resume_list %}
 				{% if resume.status == 3 %}
 					<div class="btn-group">
-						<button onclick="openResume({{resume.id}})" class="btn btn-green custom-width">{{resume.title}}</button>
+						<button onClick="openResume({{resume.id}})" class="btn btn-green custom-width">{{resume.title}}</button>
     					<button class="btn btn-green dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
     					<ul class="dropdown-menu dropdown-menu-right">
         					<li><a>Rename</a></li>
-        					<li><a>Delete</a></li>
+        					<li><a href='#'  onClick = "return deleteResume({{resume.id}});">Delete</a></li>
    						</ul>
   					</div><br>
 				{% elif resume.status == 2 %}
 					<div class="btn-group">
-						<button onclick="openResume({{resume.id}})" class="btn btn-primary custom-width">{{resume.title}}</button>
+						<button onClick="openResume({{resume.id}})" class="btn btn-primary custom-width">{{resume.title}}</button>
     					<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
     					<ul class="dropdown-menu dropdown-menu-right">
         					<li><a>Rename</a></li>
-        					<li><a>Delete</a></li>
+        					<li><a href='#'  onClick = "return deleteResume({{resume.id}});">Delete</a></li>
    						</ul>
   					</div><br>
 				{% else%}
 					<div class="btn-group">
-						<button onclick="openResume({{resume.id}})" class="btn btn-red custom-width">{{resume.title}}</button>
+						<button onClick="openResume({{resume.id}})" class="btn btn-red custom-width">{{resume.title}}</button>
     					<button class="btn btn-red dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
     					<ul class="dropdown-menu dropdown-menu-right">
         					<li><a>Rename</a></li>
-        					<li><a>Delete</a></li>
+        					<li><a href='#'  onClick = "return deleteResume({{resume.id}});">Delete</a></li>
    						</ul>
   					</div><br>
 				{% endif %}
@@ -103,33 +103,33 @@
 				  			console.log(data.resume[index].status);
 				  			if (data.resume[index].status == 3){
 				  				div_content += `<div class = "btn-group">
-				  									<button onclick="openResume(` + data.resume[index].id + `)" class="btn btn-green custom-width">` + data.resume[index].title + `</button>
+				  									<button onClick="openResume(` + data.resume[index].id + `)" class="btn btn-green custom-width">` + data.resume[index].title + `</button>
 				  									<button class="btn btn-green dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
 				  									<ul class="dropdown-menu dropdown-menu-right">
         												<li><a>Rename</a></li>
-        												<li><a>Delete</a></li>
+        												<li ><a href = '#' onClick = "return deleteResume(`+data.resume[index].id+`);">Delete</a></li>
    													</ul>
    												</div>
   												<br>`;	
 				  			}
 				  			else if (data.resume[index].status == 2){
 				  				div_content += `<div class = "btn-group">
-				  									<button onclick="openResume(` + data.resume[index].id + `)" class="btn btn-primary custom-width">` + data.resume[index].title + `</button>
+				  									<button onClick="openResume(` + data.resume[index].id + `)" class="btn btn-primary custom-width">` + data.resume[index].title + `</button>
 				  									<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
 				  									<ul class="dropdown-menu dropdown-menu-right">
         												<li><a>Rename</a></li>
-        												<li><a>Delete</a></li>
+        												<li><a href = '#' onClick = "return deleteResume(`+data.resume[index].id+`);">Delete</a></li>
    													</ul>
    												</div>
   												<br>`;	
   							}
 				  			else{
 				  				div_content += `<div class = "btn-group">
-				  									<button onclick="openResume(` + data.resume[index].id + `)" class="btn btn-red custom-width">` + data.resume[index].title + `</button>
+				  									<button onClick="openResume(` + data.resume[index].id + `)" class="btn btn-red custom-width">` + data.resume[index].title + `</button>
 				  									<button class="btn btn-red dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
 				  									<ul class="dropdown-menu dropdown-menu-right">
         												<li><a>Rename</a></li>
-        												<li><a>Delete</a></li>
+        												<li><a href = '#' onClick = "return deleteResume(`+data.resume[index].id+`);">Delete</a></li>
    													</ul>
    												</div>
   												<br>`;		
@@ -168,6 +168,20 @@
 		document.body.appendChild(form);
 		form.submit();
 
+	}
+
+	function deleteResume(id){
+		console.log('id = '+ id);
+		var form = document.createElement("form");
+		var element = document.createElement("input");
+		form.method = "POST";
+		form.action = "/delete_resume/";
+		element.value = id;
+		element.name = "resume_id";
+		form.appendChild(element);
+		document.body.appendChild(form);
+		form.submit();
+		return false;
 	}
 </script>
 

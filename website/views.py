@@ -170,6 +170,29 @@ def add_resume_view(request):
 
 
 @csrf_exempt
+def delete_resume_view(request):
+	
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+
+			logged_user_roll = request.session['user']
+			user = Users.objects.get(roll_number = logged_user_roll)
+
+			resume_id = request.POST['resume_id']
+
+			Resume.objects.filter(user = user, id=resume_id).delete()
+
+
+			return redirect('/home')
+
+	else:
+
+		return redirect('/')
+
+
+
+@csrf_exempt
 def add_point_view(request):
 	
 	if request.session.get('user') != None:
@@ -220,6 +243,27 @@ def add_section_view(request):
 	else:
 
 		return redirect('/')
+
+@csrf_exempt
+def delete_section_view(request):
+	
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+
+			print(request.POST)
+			section_id = request.POST['section_id']
+
+			Section.objects.filter(id=section_id).delete()
+
+
+			return redirect('/resume')
+
+	else:
+
+		return redirect('/')
+
+
 
 @csrf_exempt
 def view_messages(request):

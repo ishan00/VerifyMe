@@ -19,7 +19,7 @@
 	    					<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
 	    					<ul class="dropdown-menu dropdown-menu-right">
 	        					<li><a>Rename</a></li>
-	        					<li><a>Delete</a></li>
+	        					<li><a  href='#'  onClick = "return deleteSection({{section.id}});">Delete</a></li>
 	   						</ul>
 	  					</div>
   					</center>
@@ -119,5 +119,19 @@
 			form.submit();
 
 		}
+
+		function deleteSection(id){
+		console.log('id = '+ id);
+		var form = document.createElement("form");
+		var element = document.createElement("input");
+		form.method = "POST";
+		form.action = "/delete_section/";
+		element.value = id;
+		element.name = "section_id";
+		form.appendChild(element);
+		document.body.appendChild(form);
+		form.submit();
+		return false;
+	}
 	</script>
 {% endblock javascript %}
