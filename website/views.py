@@ -276,7 +276,18 @@ def view_messages(request):
 
 		notifications = Notification.objects.filter(user_receiver = user)
 
-		return render(request, 'website/messages.html', {'user':user, 'notifications':notifications})
+		conversations = Conversation.objects.filter(Q(user1 = user) | Q(user2 = user))
+
+		if len(conversations) > 0:
+			
+			latest_conversation = conversations[0].id
+
+			messages = Message.objects.filter(conversation_id = latest_conversation)
+
+		else:
+			messages = ''
+
+		return render(request, 'website/messages.html', {'user':user, 'notifications':notifications, 'conversations':conversations, 'messages':messages})
 
 		'''
 		if request.session.get('resume_id') != None:
