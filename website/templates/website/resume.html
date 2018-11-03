@@ -25,16 +25,50 @@
   					</center>
 	  				{% for point in section.points %}
 		  				<div class="input-group mb-3" style="margin-bottom: 5px;">
-		  					<input type="text" class="form-control" value="{{ point.content }}" readonly>
-		  					<span class="input-group-btn">
-		    					<button class="btn btn-green" type="button"><i class="fas fa-check"></i></button>
-		  					</span>
+		  					{% if point.status == 'V' %}
+		  						<input type="text" class="form-control" value="{{ point.content }}" readonly style="background-color: #429244; color: #fff;">
+		  						<span class="input-group-btn">
+			  						<button class="btn btn-green dropdown-toggle" style = "width : 40px;" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+			    					<ul class="dropdown-menu dropdown-menu-right">
+			        					<li><a href='#'  onClick = "">Proofs</a></li>
+			        					<li><a href='#'  onClick = "return deletePoint({{point.id}});">Delete</a></li>
+			   						</ul>
+
+			    					<!-- <button class="btn btn-green" type="button"><i class="fas fa-check"></i></button> -->
+		  						</span>
+		  					{% elif point.status == 'R' %}
+		  						<input type="text" class="form-control" value="{{ point.content }}" readonly style="background-color: #ff3f3f; color: #fff;">
+		  						<span class="input-group-btn">
+			  						<button class="btn btn-red dropdown-toggle" style = "width : 40px;" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+			    					<ul class="dropdown-menu dropdown-menu-right">
+			        					<li><a href = '#' onClick = "return openSendModal({{point.id}});">Resend</a></li>
+			        					<li><a href='#'  onClick = "">Proofs</a></li>
+			        					<li><a href = '#' onClick = "return openCommentModal('{{point.comment}}');">Comment</a></li>
+			        					<li><a href='#'  onClick = "return deletePoint({{point.id}});">Delete</a></li>
+			   						</ul>
+
+			    					<!-- <button class="btn btn-green" type="button"><i class="fas fa-check"></i></button> -->
+		  						</span>
+		  					{% else %}	
+		  						<input type="text" class="form-control" value="{{ point.content }}" readonly>
+		  						<span class="input-group-btn">
+			  						<button class="btn btn-primary dropdown-toggle" style = "width : 40px;" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+			    					<ul class="dropdown-menu dropdown-menu-right">
+			        					<li><a href = '#' onClick = "return openSendModal({{point.id}});">Send</a></li>
+			        					<li><a href='#'  onClick = "">Proofs</a></li>
+			        					<li><a href='#'  onClick = "return deletePoint({{point.id}});">Delete</a></li>
+			   						</ul>
+
+			    					<!-- <button class="btn btn-green" type="button"><i class="fas fa-check"></i></button> -->
+		  						</span>
+		  					{% endif %}
+		  					
 		  				</div>
 	  				{% endfor %}
 	  				<div class="input-group mb-3" style="margin-bottom: 5px;">
 	  					<input type="text" class="form-control" id = "{{section.id}}">
 	  					<span class="input-group-btn">
-	    					<button class="btn btn-green" type="submit" onclick="add_point({{section.id}})"><i class="fas fa-check"></i></button>
+	    					<button class="btn btn-green" style = "width : 40px;" type="submit" onclick="add_point({{section.id}})"><i class="fas fa-check"></i></button>
 	  					</span>
 		  			</div>
 
@@ -45,7 +79,14 @@
   				<button type="button" class="btn btn-primary custom-width" data-toggle="modal" data-target="#myModal">Add Section</button>
   				</div></center>
 				  <!-- Modal -->
-				  <div class="modal fade" id="myModal" role="dialog">
+				  
+			<div class="col-sm-1"></div>
+		</div>
+	</div>
+</section>
+
+<!-- Modal for add point -->
+<div class="modal fade" id="myModal" role="dialog">
 				    <div class="modal-dialog">
 				    
 				      <!-- Modal content-->
@@ -79,11 +120,90 @@
   				<!-- Multicolumn -->
 
 			</div>
-			<div class="col-sm-1"></div>
-		</div>
-	</div>
-</section>
+
+
+
+<!-- Modal for send -->
+		   						 <div class="modal fade" id="SendModal" role="dialog">
+				 				 <div class="modal-dialog">
+							    
+							      <!-- Modal content-->
+								      <div class="modal-content">
+								        <div class="modal-header">
+								          <button type="button" class="close" data-dismiss="modal">&times;</button>
+								          <h4 class="modal-title">Send</h4>
+								        </div>
+								        <div class="modal-body">
+								        <form method='POST' action='/add_request/'>
+								          Choose: <select class="form-control" placeholder="Position" name="roll_number" >
+											<option value="">Position</option>
+											{% for user in privileged_user %}
+											<option value="{{user.roll_number}}">{{user.position}} ({{user.name}})</option>
+											{% endfor %}
+										</select>
+								  		 <input type=hidden name = "sendModalID" id="sendModalID" >
+										<div class='modal-footer'>
+								          <input type=submit id="_create_" class="btn btn-primary">
+								  		</div>
+								  		</form>
+								      </div>
+								    </div>
+								  </div>
+								</div>
+
+
+<!-- Modal for Proofs -->
+		   						 <div class="modal fade" id="ProofModal" role="dialog">
+				 				 <div class="modal-dialog">
+							    
+							      <!-- Modal content-->
+								      <div class="modal-content">
+								        <div class="modal-header">
+								          <button type="button" class="close" data-dismiss="modal">&times;</button>
+								          <h4 class="modal-title">Send</h4>
+								        </div>
+								        <div class="modal-body">
+								        <form method='POST' action='/add_section/'>
+								          Title: <input type=text id=section-title name='title'><br>
+								          Type: <select class="form-control" placeholder="Department" name="type">
+											<option value="">Choose a type</option>
+											<option value="CS">Bullet</option>
+											<option value="EE">Block</option>
+											<option value="EE">Block</option>
+										</select>
+										<div class='modal-footer'>
+								          <input type=submit id="_create_" class="btn btn-primary" >
+								  		</div>
+								  		</form>
+								      </div>
+								    </div>
+								  </div>
+								</div>
+
+<!-- Modal for Comment -->
+		   						 <div class="modal fade" id="CommentModal" role="dialog">
+				 				 <div class="modal-dialog">
+							    
+							      <!-- Modal content-->
+								      <div class="modal-content">
+								        <div class="modal-header">
+								          <button type="button" class="close" data-dismiss="modal">&times;</button>
+								          <h4 class="modal-title">Comment</h4>
+								        </div>
+								        <div class="modal-body" id="CommentDiv">
+								        
+								      	</div>
+								      	<div class='modal-footer'>
+								          <button type=submit  class="btn btn-primary"  data-dismiss="modal">Close</button>
+								  		</div>
+								    </div>
+								  </div>
+								</div>
+
+
 {% endblock content %}
+
+
 
 
 {% block javascript %}
@@ -121,17 +241,41 @@
 		}
 
 		function deleteSection(id){
-		console.log('id = '+ id);
-		var form = document.createElement("form");
-		var element = document.createElement("input");
-		form.method = "POST";
-		form.action = "/delete_section/";
-		element.value = id;
-		element.name = "section_id";
-		form.appendChild(element);
-		document.body.appendChild(form);
-		form.submit();
-		return false;
-	}
+			console.log('id = '+ id);
+			var form = document.createElement("form");
+			var element = document.createElement("input");
+			form.method = "POST";
+			form.action = "/delete_section/";
+			element.value = id;
+			element.name = "section_id";
+			form.appendChild(element);
+			document.body.appendChild(form);
+			form.submit();
+			return false;
+		}
+		function deletePoint(id){
+			console.log('id = '+ id);
+			var form = document.createElement("form");
+			var element = document.createElement("input");
+			form.method = "POST";
+			form.action = "/delete_point/";
+			element.value = id;
+			element.name = "point_id";
+			form.appendChild(element);
+			document.body.appendChild(form);
+			form.submit();
+			return false;
+		}
+		function openSendModal(id){
+			document.getElementById('sendModalID').value = id;
+			$("#SendModal").modal();
+			return false;
+		}
+		function openCommentModal(comment){
+			document.getElementById('CommentDiv').innerHTML = comment;
+			console.log('Comment');
+			$("#CommentModal").modal();
+			return false;
+		}
 	</script>
 {% endblock javascript %}

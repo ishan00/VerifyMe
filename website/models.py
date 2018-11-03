@@ -76,7 +76,7 @@ class Point(models.Model):
 
 	type = models.CharField(max_length = 1, choices = POINT_TYPE, editable = False, default = 'N')
 
-	status = models.CharField(max_length = 1, choices = POINT_TYPE, editable = False, default = 'P')
+	status = models.CharField(max_length = 1, choices = POINT_TYPE, default = 'P')
 	
 	content = models.TextField(default = '')
 
@@ -89,8 +89,8 @@ class Point(models.Model):
 
 class Request(models.Model):
 	
-	user_sender = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_request_sender')
-	user_receiver = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_request_receiver')
+	sender = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_request_sender')
+	receiver = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_request_receiver')
 
 	point = models.ForeignKey('Point', on_delete = models.CASCADE)
 
@@ -122,8 +122,8 @@ class Message(models.Model):
 
 class Notification(models.Model):
 
-	user_sender = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_notification_sender')
-	user_receiver = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_notification_receiver')
+	sender = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_notification_sender')
+	receiver = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_notification_receiver')
 
 	status = models.BooleanField(editable = False, default = False)
 

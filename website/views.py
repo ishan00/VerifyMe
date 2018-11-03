@@ -80,9 +80,18 @@ def home_view(request):
 		if request.session.get('resume_id') != None:
 			del request.session['resume_id']
 
-		request_list = Request.objects.filter(user_receiver = user)
+		# request_list = Request.objects.filter(receiver = user)
 
-		notifications = Notification.objects.filter(user_receiver = user)
+		notifications = Notification.objects.filter(receiver = user)
+
+		requests = Request.objects.filter(receiver = user).order_by("-timestamp")
+		
+		request_list = []
+		for request1 in requests :
+			request_list.append({'id' : request1.id,'sender' : request1.sender.name, 'point_content' : request1.point.content, 'point_id' : request1.point.id})
+
+
+		print(request_list)
 
 		return render(request, 'website/home_page.html', {'user':user, 'resume_list': resume_list, 'request_list': request_list, 'notifications':notifications})
 
@@ -110,9 +119,13 @@ def view_resume(request):
 				points = Point.objects.filter(section = sections[i])
 				section_list[i]['points'] = [ model_to_dict(obj) for obj in points]
 
-			notifications = Notification.objects.filter(user_receiver = user)
+			notifications = Notification.objects.filter(receiver = user)
 
-			return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications})
+			privileged_user = Users.objects.filter(privilege = True)
+
+
+			
+			return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications, 'privileged_user' : privileged_user})
 
 
 		elif request.method == "POST":
@@ -130,9 +143,11 @@ def view_resume(request):
 					points = Point.objects.filter(section = sections[i])
 					section_list[i]['points'] = [ model_to_dict(obj) for obj in points]
 
-				notifications = Notification.objects.filter(user_receiver = user)
+				notifications = Notification.objects.filter(receiver = user)
 
-				return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications})
+				privileged_user = Users.objects.filter(privilege = True)
+
+				return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications, 'privileged_user' : privileged_user})
 
 		else:
 
@@ -264,6 +279,26 @@ def delete_section_view(request):
 
 		return redirect('/')
 
+@csrf_exempt
+def delete_point_view(request):
+	
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+
+			print(request.POST)
+			point_id = request.POST['point_id']
+
+			Point.objects.filter(id=point_id).delete()
+
+
+			return redirect('/resume')
+
+	else:
+
+		return redirect('/')
+
+
 
 
 @csrf_exempt
@@ -274,7 +309,7 @@ def view_messages(request):
 		logged_user_roll = request.session['user']
 		user = Users.objects.get(roll_number = logged_user_roll)
 
-		notifications = Notification.objects.filter(user_receiver = user)
+		notifications = Notification.objects.filter(receiver = user)
 
 		conversations = Conversation.objects.filter(Q(user1 = user) | Q(user2 = user))
 
@@ -309,3 +344,58 @@ def view_messages(request):
 	else:
 
 		return redirect('/')
+
+@csrf_exempt
+def add_request_view(request):
+	
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+
+
+			logged_user_roll = request.session['user']
+			sender = Users.objects.get(roll_number = logged_user_roll)
+
+			roll_number = request.POST['roll_number']
+			receiver = Users.objects.get(roll_number = roll_number)
+			
+			point_id = request.POST['sendModalID']
+			point = Point.objects.get(id = point_id)
+
+			Request.objects.create(sender = sender, receiver = receiver,  point = point)
+			
+			return redirect('/resume')
+
+	else:
+
+		return redirect('/')
+
+
+@csrf_exempt
+def request_action_view(request):
+	
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+
+
+			logged_user_roll = request.session['user']
+			sender = Users.objects.get(roll_number = logged_user_roll)
+
+			request_id = request.POST['request_id']
+			verified = request.POST['verified']
+
+			request1 = Request.objects.get(id=request_id)
+			point = request1.point
+			if(verified == '1'):
+				point.status = 'V'
+			elif(verified == '0'):
+				comment = request.POST['comment']
+				point.status = 'R'
+				point.comment = comment
+
+			point.save()
+			request1.delete()
+
+
+			return redirect('/')

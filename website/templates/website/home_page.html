@@ -56,13 +56,72 @@
 			{% endfor %}
 		</div>
 	</div>
+
+	<div class="container clearfix">
+	
+		   <table id="request_table" class="table-hover" width=100%>
+		      <tr style="height: 50px;">
+		         <!-- <th>Picture</th> -->
+		         <th width=20%>Sender</th>
+		         <th width=70%>Point</th>
+		         <th width=10%>File</th>
+		      </tr>
+		      {% for request in request_list  %}
+		      <tr onclick='return clicked();'>
+		         <!-- <td><img src="http://lorempixel.com/100/100/people/1" alt="" /></td> -->
+		         <td width=20%>{{request.sender}}</td>
+		         <td width=70% style="text-align: left;">{{request.point_content}}</td>
+		         <td width=10%>
+		         	<button class='btn btn-primary' style='width:100px;'>view</button><br>
+		         	  <div class="dropdown">
+					  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style='width:100px; margin: 5px;'>Action
+					  <span class="caret"></span></button>
+					  <ul class="dropdown-menu" >
+					    <li><a href="#" onclick="return verifyRequest({{request.id}});">Verify</a></li>
+					    <li><a href="#" onclick="return openDenyModal({{request.id}});">Deny</a></li>
+					    <!-- <li><a href="#">JavaScript</a></li> -->
+					  </ul>
+					  </div>		         </td>
+		         <ul id="request_button" class="dropdown-menu dropdown-menu-right">
+      				<li><a>Rename</a></li>
+        			<li><a href='#'  onClick = "return deleteResume({{resume.id}});">Delete</a></li>
+   			  	 </ul>
+		      </tr>
+		      
+		      {% endfor %}
+		   </table>
+	</div>
 </section>
+
+		   						 <div class="modal fade" id="DenyModal" role="dialog">
+				 				 <div class="modal-dialog">
+							    
+							      <!-- Modal content-->
+								      <div class="modal-content">
+								        <div class="modal-header">
+								          <button type="button" class="close" data-dismiss="modal">&times;</button>
+								          <h4 class="modal-title">Send</h4>
+								        </div>
+								        <div class="modal-body">
+								        <form method='POST' action='/request_action/'>
+								        	Comment:<textarea id='comment' name='comment' rows="3" cols="68"></textarea>
+								  		 <input type=hidden name = "request_id" id="denyModalID" >
+								  		 <input type=hidden name = "verified" id="verified" value = 0 readonly>
+										<div class='modal-footer'>
+								          <input type=submit id="_create_" class="btn btn-primary">
+								  		</div>
+								  		</form>
+								      </div>
+								    </div>
+								  </div>
+								</div>
+
 
 {% endblock content %}
 
 
 {% block javascript %}
-
+8
 <script type="text/javascript">
 	$(document).ready(function(){
     	$("#_show_").click(function(){
@@ -166,7 +225,6 @@
     		}
     	});
 	});
-
 	function openResume(id){
 		console.log(id);
 		var form = document.createElement("form");
@@ -195,6 +253,28 @@
 		form.appendChild(element);
 		document.body.appendChild(form);
 		form.submit();
+		return false;
+	}
+	function verifyRequest(id){
+		console.log('id = '+ id);
+		var form = document.createElement("form");
+		var element = document.createElement("input");
+		var element2 = document.createElement("input");
+		form.method = "POST";
+		form.action = "/request_action/";
+		element.value = id;
+		element.name = "request_id";
+		element2.value = 1;
+		element2.name = "verified";
+		form.appendChild(element);
+		form.appendChild(element2);
+		document.body.appendChild(form);
+		form.submit();
+		return false;
+	}
+	function openDenyModal(id){
+		document.getElementById('denyModalID').value = id;
+		$("#DenyModal").modal();
 		return false;
 	}
 </script>
