@@ -9,7 +9,12 @@
 <section>
 	<div class="container clearfix">
 		<div class="content">
-			<h1 align="center" class="site-title">{{ user.name }}</h1><br>
+			<h1 align="center" class="site-title">{{ user.name }}</h1>
+			{% if user.privilege %}
+				<h3 align="center" class="site-subtitle">({{ user.position }})</h3>
+			{% endif %}
+			<br>
+			<h3
 		</div>
 		<div>
 			<button id='_show_' type="submit" class="btn btn-primary transition-visible custom-width">Add resume</button><br><br>
@@ -22,8 +27,11 @@
 		</div>
 		
 		<hr>
-		
-		<div id = '_all_'>
+		<div class="content">
+			<h3 align="center" class="site-subtitle">Resumes</h1><br>
+		</div>
+		{% if resume_list %}
+		<div id = '_all_'>		
 			{% for resume in resume_list %}
 				{% if resume.status == 3 %}
 					<div class="btn-group">
@@ -55,42 +63,58 @@
 				{% endif %}
 			{% endfor %}
 		</div>
+		{% else %}
+		<div class="content">
+			<h4>No resume created so far</h1><br>
+		</div>
+		{% endif %}
 	</div>
 
-	<div class="container clearfix">
-	
-		   <table id="request_table" class="table-hover" width=100%>
-		      <tr style="height: 50px;">
-		         <!-- <th>Picture</th> -->
-		         <th width=20%>Sender</th>
-		         <th width=70%>Point</th>
-		         <th width=10%>File</th>
-		      </tr>
-		      {% for request in request_list  %}
-		      <tr onclick='return clicked();'>
-		         <!-- <td><img src="http://lorempixel.com/100/100/people/1" alt="" /></td> -->
-		         <td width=20%>{{request.sender}}</td>
-		         <td width=70% style="text-align: left;">{{request.point_content}}</td>
-		         <td width=10%>
-		         	<button class='btn btn-primary' style='width:100px;'>view</button><br>
-		         	  <div class="dropdown">
-					  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style='width:100px; margin: 5px;'>Action
-					  <span class="caret"></span></button>
-					  <ul class="dropdown-menu" >
-					    <li><a href="#" onclick="return verifyRequest({{request.id}});">Verify</a></li>
-					    <li><a href="#" onclick="return openDenyModal({{request.id}});">Deny</a></li>
-					    <!-- <li><a href="#">JavaScript</a></li> -->
-					  </ul>
-					  </div>		         </td>
-		         <ul id="request_button" class="dropdown-menu dropdown-menu-right">
-      				<li><a>Rename</a></li>
-        			<li><a href='#'  onClick = "return deleteResume({{resume.id}});">Delete</a></li>
-   			  	 </ul>
-		      </tr>
-		      
-		      {% endfor %}
-		   </table>
-	</div>
+	{% if user.privilege %}
+		<hr>
+		<div class="content">
+			<h3 align="center" class="site-subtitle">Requests</h1><br>
+		</div>
+		<div class="container clearfix">
+			{% if request_list %}	
+			   <table id="request_table" class="table-hover" width=100%>
+			      <tr style="height: 50px;">
+			         <!-- <th>Picture</th> -->
+			         <th width=20%>Sender</th>
+			         <th width=70%>Point</th>
+			         <th width=10%>File</th>
+			      </tr>
+			      {% for request in request_list  %}
+			      <tr onclick='return clicked();'>
+			         <!-- <td><img src="http://lorempixel.com/100/100/people/1" alt="" /></td> -->
+			         <td width=20%>{{request.sender}}</td>
+			         <td width=70% style="text-align: left;">{{request.point_content}}</td>
+			         <td width=10%>
+			         	<button class='btn btn-primary' style='width:100px;'>view</button><br>
+			         	  <div class="dropdown">
+						  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style='width:100px; margin: 5px;'>Action
+						  <span class="caret"></span></button>
+						  <ul class="dropdown-menu" >
+						    <li><a href="#" onclick="return verifyRequest({{request.id}});">Verify</a></li>
+						    <li><a href="#" onclick="return openDenyModal({{request.id}});">Deny</a></li>
+						    <!-- <li><a href="#">JavaScript</a></li> -->
+						  </ul>
+						  </div>		         </td>
+			         <ul id="request_button" class="dropdown-menu dropdown-menu-right">
+	      				<li><a>Rename</a></li>
+	        			<li><a href='#'  onClick = "return deleteResume({{resume.id}});">Delete</a></li>
+	   			  	 </ul>
+			      </tr>
+			      
+			      {% endfor %}
+			   </table>
+			{% else %}
+				<div class="content">
+					<h4>No request pending</h1><br>
+				</div>
+			{% endif %}
+		</div>
+	{% endif %}
 </section>
 
 		   						 <div class="modal fade" id="DenyModal" role="dialog">
@@ -121,7 +145,7 @@
 
 
 {% block javascript %}
-8
+
 <script type="text/javascript">
 	$(document).ready(function(){
     	$("#_show_").click(function(){

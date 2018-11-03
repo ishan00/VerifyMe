@@ -90,8 +90,7 @@ def home_view(request):
 		for request1 in requests :
 			request_list.append({'id' : request1.id,'sender' : request1.sender.name, 'point_content' : request1.point.content, 'point_id' : request1.point.id})
 
-
-		print(request_list)
+		# print(request_list)
 
 		return render(request, 'website/home_page.html', {'user':user, 'resume_list': resume_list, 'request_list': request_list, 'notifications':notifications})
 
@@ -215,7 +214,7 @@ def add_point_view(request):
 
 		if request.method == "POST":
 
-			print (request)
+			# print (request)
 
 			logged_user_roll = request.session['user']
 			user = Users.objects.get(roll_number = logged_user_roll)
@@ -223,7 +222,7 @@ def add_point_view(request):
 			content = request.POST['content']
 			section_id = request.POST['section_id']
 
-			print (content,section_id)
+			# print (content,section_id)
 
 			section = Section.objects.get(id=section_id)
 			new_Point = Point.objects.create(section = section, content = content)
@@ -267,7 +266,7 @@ def delete_section_view(request):
 
 		if request.method == "POST":
 
-			print(request.POST)
+			# print(request.POST)
 			section_id = request.POST['section_id']
 
 			Section.objects.filter(id=section_id).delete()
@@ -286,7 +285,7 @@ def delete_point_view(request):
 
 		if request.method == "POST":
 
-			print(request.POST)
+			# print(request.POST)
 			point_id = request.POST['point_id']
 
 			Point.objects.filter(id=point_id).delete()
