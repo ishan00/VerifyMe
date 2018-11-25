@@ -5,6 +5,7 @@
 {% endblock navbar_items %}
 
 {% block content %}
+
 <section>
 	<div class="container clearfix">
 		<h1 align="center" class="site-title">{{ resume.title }}</h1><br>
@@ -30,7 +31,7 @@
 		  						<span class="input-group-btn">
 			  						<button class="btn btn-green dropdown-toggle" style = "width : 40px;" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
 			    					<ul class="dropdown-menu dropdown-menu-right">
-			        					<li><a href='#'  onClick = "">Proofs</a></li>
+			        					<li><a href='#'  onClick = "return openUploadModal({{point.id}});">Proofs</a></li>
 			        					<li><a href='#'  onClick = "return deletePoint({{point.id}});">Delete</a></li>
 			   						</ul>
 
@@ -42,7 +43,7 @@
 			  						<button class="btn btn-red dropdown-toggle" style = "width : 40px;" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
 			    					<ul class="dropdown-menu dropdown-menu-right">
 			        					<li><a href = '#' onClick = "return openSendModal({{point.id}});">Resend</a></li>
-			        					<li><a href='#'  onClick = "">Proofs</a></li>
+			        					<li><a href='#'  onClick = "return openUploadModal({{point.id}});">Proofs</a></li>
 			        					<li><a href = '#' onClick = "return openCommentModal('{{point.comment}}');">Comment</a></li>
 			        					<li><a href='#'  onClick = "return deletePoint({{point.id}});">Delete</a></li>
 			   						</ul>
@@ -55,7 +56,7 @@
 			  						<button class="btn btn-primary dropdown-toggle" style = "width : 40px;" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
 			    					<ul class="dropdown-menu dropdown-menu-right">
 			        					<li><a href = '#' onClick = "return openSendModal({{point.id}});">Send</a></li>
-			        					<li><a href='#'  onClick = "">Proofs</a></li>
+			        					<li><a href='#'  onClick = "return openUploadModal({{point.id}});">Proofs</a></li>
 			        					<li><a href='#'  onClick = "return deletePoint({{point.id}});">Delete</a></li>
 			   						</ul>
 
@@ -153,7 +154,7 @@
 
 
 <!-- Modal for Proofs -->
-		   						 <div class="modal fade" id="ProofModal" role="dialog">
+		   						 <div class="modal fade" id="UploadModal" role="dialog">
 				 				 <div class="modal-dialog">
 							    
 							      <!-- Modal content-->
@@ -163,14 +164,13 @@
 								          <h4 class="modal-title">Send</h4>
 								        </div>
 								        <div class="modal-body">
-								        <form method='POST' action='/add_section/'>
-								          Title: <input type=text id=section-title name='title'><br>
-								          Type: <select class="form-control" placeholder="Department" name="type">
-											<option value="">Choose a type</option>
-											<option value="CS">Bullet</option>
-											<option value="EE">Block</option>
-											<option value="EE">Block</option>
-										</select>
+								        	<div id=fileList>
+								        		
+								        	</div>
+								        <form method='POST' action='/upload/' enctype="multipart/form-data">
+								          <input type=file id=section-title name='file' multiple><br>
+										  <input type=hidden id=uploadModalID name=pointID><br>		
+										</div>
 										<div class='modal-footer'>
 								          <input type=submit id="_create_" class="btn btn-primary" >
 								  		</div>
@@ -200,6 +200,13 @@
 								  </div>
 								</div>
 
+
+{% if alert %}
+	<script> 
+		window.history.pushState({},null,"/resume");
+		alert("{{alert}}");
+	</script>
+{% endif %}
 
 {% endblock content %}
 
@@ -276,6 +283,32 @@
 			console.log('Comment');
 			$("#CommentModal").modal();
 			return false;
+		}
+		function openUploadModal(id){
+			loadFiles(id);
+			document.getElementById('uploadModalID').value = id;
+			console.log('Uploading');
+			$("#UploadModal").modal();
+			return false;
+		}
+		function loadFiles(id){
+			var xhttp = new XMLHttpRequest();
+				
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					var data = JSON.parse(this.responseText);
+					var file_list = data.data;
+					console.log(file_list)
+					var output = "";
+					for (var i = 0; i < file_list.length; i++){
+						path = encodeURIComponent(file_list[i].trim());
+						output += "<a href=/media/"+ id +"/" + path + " target=_blank>" + file_list[i] + "</a><br>";
+					}
+					document.getElementById('fileList').innerHTML = output;
+				}
+			}
+			xhttp.open("GET", "/get_files/?id="+id+ "&point=1", true);
+			xhttp.send();			
 		}
 	</script>
 {% endblock javascript %}

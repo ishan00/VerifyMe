@@ -1,7 +1,11 @@
 from django.urls import path
+from django.urls import re_path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
+	re_path(r'^media/(?P<path>.*)$', views.protected_serve, {'document_root': settings.MEDIA_ROOT}),
 	path('', views.login_view, name = 'login_view'),
 	path('home/',views.home_view, name = 'home_view'),
 	path('resume/', views.view_resume, name = 'view_resume'),
@@ -15,6 +19,7 @@ urlpatterns = [
 	path('delete_point/', views.delete_point_view, name = 'delete_point_view'),
 	path('add_message/', views.home_view, name = 'logout_view'),
 	path('add_request/', views.add_request_view, name = 'add_request_view'),
-	path('request_action/', views.request_action_view, name = 'request_action_view')
-
+	path('request_action/', views.request_action_view, name = 'request_action_view'),
+	path('upload/', views.upload, name = 'upload'),
+	path('get_files/', views.get_files, name = 'get_files')
 ]

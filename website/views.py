@@ -7,6 +7,14 @@ from django.contrib.auth.decorators import login_required
 from .models import Users,Resume,Section,Point,Conversation,Message,Notification,Passwords,Request
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.static import serve
+from django.core.files.storage import default_storage
+import os
+from pathlib import Path
+
+def protected_serve(request,path,document_root=None,show_indexes=False):
+	print("Maja aa gaya")
+	return serve(request,path,document_root,show_indexes)
 
 
 def login_view(request):
@@ -100,7 +108,7 @@ def home_view(request):
 
 
 @csrf_exempt
-def view_resume(request):
+def view_resume(request, alert = ""):
 
 	if request.session.get('user') != None:
 
@@ -124,7 +132,7 @@ def view_resume(request):
 
 
 			
-			return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications, 'privileged_user' : privileged_user})
+			return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications, 'privileged_user' : privileged_user, 'alert' : alert})
 
 
 		elif request.method == "POST":
@@ -146,7 +154,7 @@ def view_resume(request):
 
 				privileged_user = Users.objects.filter(privilege = True)
 
-				return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications, 'privileged_user' : privileged_user})
+				return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications, 'privileged_user' : privileged_user, 'alert' : alert})
 
 		else:
 
@@ -398,3 +406,48 @@ def request_action_view(request):
 
 
 			return redirect('/')
+
+
+
+@csrf_exempt
+def upload(request):	
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+			files = request.FILES.getlist('file')
+			point_id = request.POST['pointID']
+			point = Point.objects.get(id=point_id)
+			logged_user_roll = request.session['user']
+
+			if point.section.resume.user.roll_number != logged_user_roll:
+				return view_resume(request, "Unable to upload")
+
+			for file in files:
+				file_name = default_storage.save(point_id + '/' + file.name, file)
+			return view_resume(request, "Successfully uploaded")
+
+	else:
+		return redirect('/')
+
+def get_files(request):	
+	if request.session.get('user') != None:
+
+		if request.method == "GET":
+			if(request.GET['point'] == '0'):
+				request_id = request.GET['id']
+				request = Request.objects.get(id=request_id)
+				point_id = str(request.point.id)
+			else:
+				point_id = request.GET['id']
+
+			path = Path("media/"+point_id)
+
+			file_list = [];
+			if(path.is_dir()):
+				file_list = os.listdir("media/"+point_id)
+		
+			return JsonResponse({'data': file_list, 'point_id' : point_id})
+
+
+	else:
+		return redirect('/')
