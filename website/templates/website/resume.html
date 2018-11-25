@@ -302,13 +302,25 @@
 					var output = "";
 					for (var i = 0; i < file_list.length; i++){
 						path = encodeURIComponent(file_list[i].trim());
-						output += "<a href=/media/"+ id +"/" + path + " target=_blank>" + file_list[i] + "</a><br>";
+						output += "<a href=/media/"+ id +"/" + path + " target=_blank>" + file_list[i] + "</a><button class='btn-red btn' onClick=\"return deleteFile("+id+", '"+file_list[i]+"');\">&times;</button><br>";
 					}
 					document.getElementById('fileList').innerHTML = output;
 				}
 			}
 			xhttp.open("GET", "/get_files/?id="+id+ "&point=1", true);
 			xhttp.send();			
+		}
+		function deleteFile(point_id, file_name){
+			var xhttp = new XMLHttpRequest();
+				
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					var data = JSON.parse(this.responseText);
+					openUploadModal(point_id);
+				}
+			}
+			xhttp.open("GET", "/delete_file/?id="+point_id+ "&path="+file_name, true);
+			xhttp.send();	
 		}
 	</script>
 {% endblock javascript %}

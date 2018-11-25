@@ -21,5 +21,8 @@ urlpatterns = [
 	path('add_request/', views.add_request_view, name = 'add_request_view'),
 	path('request_action/', views.request_action_view, name = 'request_action_view'),
 	path('upload/', views.upload, name = 'upload'),
-	path('get_files/', views.get_files, name = 'get_files')
+	path('get_files/', views.get_files, name = 'get_files'),
+	path('delete_file/', views.delete_file, name = 'delete_file'),
+	path('mark_as_read/', views.mark_as_read, name = 'mark_as_read'),
+	path('redirect_request/', views.redirect_request_view, name = 'redirect_request_view'),
 ]

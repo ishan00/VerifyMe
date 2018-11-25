@@ -13,8 +13,24 @@ import os
 from pathlib import Path
 
 def protected_serve(request,path,document_root=None,show_indexes=False):
-	print("Maja aa gaya")
-	return serve(request,path,document_root,show_indexes)
+	
+	if request.session.get('user') != None:
+		logged_user_roll = request.session['user']
+		user = Users.objects.get(roll_number = logged_user_roll)
+		point_id = path.split('/')[0].strip()
+		point = Point.objects.get(id=point_id)
+		if point.section.resume.user != user:
+			requests = Request.objects.filter(receiver=user)
+			found = False
+			for request1 in requests:
+				if request1.point == point:
+					found = True
+			if not found:
+				return view_resume(request, "Access denied")
+		return serve(request,path,document_root,show_indexes)
+
+	else:
+		return redirect('/')
 
 
 def login_view(request):
@@ -90,7 +106,12 @@ def home_view(request):
 
 		# request_list = Request.objects.filter(receiver = user)
 
-		notifications = Notification.objects.filter(receiver = user)
+		notifications = Notification.objects.filter(receiver = user).order_by("-timestamp")
+
+		count = 0
+		for n in notifications:
+			if not n.seen:
+				count += 1
 
 		requests = Request.objects.filter(receiver = user).order_by("-timestamp")
 		
@@ -98,9 +119,11 @@ def home_view(request):
 		for request1 in requests :
 			request_list.append({'id' : request1.id,'sender' : request1.sender.name, 'point_content' : request1.point.content, 'point_id' : request1.point.id})
 
+		privileged_user = Users.objects.filter(privilege = True)
+
 		# print(request_list)
 
-		return render(request, 'website/home_page.html', {'user':user, 'resume_list': resume_list, 'request_list': request_list, 'notifications':notifications})
+		return render(request, 'website/home_page.html', {'user':user, 'resume_list': resume_list, 'request_list': request_list, 'notifications':notifications, 'notification_count':count, 'privileged_user':privileged_user})
 
 	else:
 
@@ -126,7 +149,7 @@ def view_resume(request, alert = ""):
 				points = Point.objects.filter(section = sections[i])
 				section_list[i]['points'] = [ model_to_dict(obj) for obj in points]
 
-			notifications = Notification.objects.filter(receiver = user)
+			notifications = Notification.objects.filter(receiver = user).order_by("-timestamp")
 
 			privileged_user = Users.objects.filter(privilege = True)
 
@@ -150,7 +173,7 @@ def view_resume(request, alert = ""):
 					points = Point.objects.filter(section = sections[i])
 					section_list[i]['points'] = [ model_to_dict(obj) for obj in points]
 
-				notifications = Notification.objects.filter(receiver = user)
+				notifications = Notification.objects.filter(receiver = user).order_by("-timestamp")
 
 				privileged_user = Users.objects.filter(privilege = True)
 
@@ -370,8 +393,36 @@ def add_request_view(request):
 			point = Point.objects.get(id = point_id)
 
 			Request.objects.create(sender = sender, receiver = receiver,  point = point)
+			Notification.objects.create(sender=sender, receiver=receiver, n_type=2, point=point, seen=False)
 			
 			return redirect('/resume')
+
+	else:
+
+		return redirect('/')
+
+@csrf_exempt
+def redirect_request_view(request):
+	
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+
+
+			logged_user_roll = request.session['user']
+
+			roll_number = request.POST['roll_number']
+			new_receiver = Users.objects.get(roll_number = roll_number)
+			
+			request_id = request.POST['redirectModalID']
+
+			request1 = Request.objects.get(id=request_id)
+			request1.receiver = new_receiver
+			request1.save()
+
+			Notification.objects.create(sender=request1.sender, receiver=new_receiver, n_type=2, point=request1.point, seen=False)
+			
+			return redirect('/home')
 
 	else:
 
@@ -396,10 +447,12 @@ def request_action_view(request):
 			point = request1.point
 			if(verified == '1'):
 				point.status = 'V'
+				Notification.objects.create(sender=sender, receiver=point.section.resume.user, n_type=0, point=point, seen=False)
 			elif(verified == '0'):
 				comment = request.POST['comment']
 				point.status = 'R'
 				point.comment = comment
+				Notification.objects.create(sender=sender, receiver=point.section.resume.user, n_type=1, point=point, seen=False)
 
 			point.save()
 			request1.delete()
@@ -447,6 +500,44 @@ def get_files(request):
 				file_list = os.listdir("media/"+point_id)
 		
 			return JsonResponse({'data': file_list, 'point_id' : point_id})
+
+
+	else:
+		return redirect('/')
+
+def delete_file(request):	
+	if request.session.get('user') != None:
+
+		if request.method == "GET":
+			point_id = request.GET['id']
+			file_name = request.GET['path']
+
+			print("fwsf")
+
+			path = Path("media/"+point_id+'/'+file_name)
+
+			if(path.exists()):
+				os.remove("media/"+point_id+'/'+file_name)
+		
+			return JsonResponse({})
+
+
+	else:
+		return redirect('/')
+
+
+def mark_as_read(request):	
+	if request.session.get('user') != None:
+
+		if request.method == "GET":
+
+			logged_user_roll = request.session['user']
+			user = Users.objects.get(roll_number = logged_user_roll)			
+			notifications = Notification.objects.filter(receiver = user)
+			for notification in notifications:
+				notification.seen = True
+				notification.save()		
+			return JsonResponse({})
 
 
 	else:

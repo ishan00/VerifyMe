@@ -125,11 +125,13 @@ class Notification(models.Model):
 	sender = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_notification_sender')
 	receiver = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_notification_receiver')
 
-	status = models.BooleanField(editable = False, default = False)
+	n_type = models.IntegerField(editable = True, null = False)
 
 	point = models.ForeignKey('Point', on_delete = models.CASCADE)
 
-	timestamp = models.DateTimeField(auto_now_add = True, null = True)
+	seen = models.BooleanField(editable = True, default = False)
+
+	timestamp = models.DateTimeField(auto_now_add = True, null = True, editable = True)
 
 	def __str__(self):
 		return str(self.id)

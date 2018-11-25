@@ -14,6 +14,20 @@ NAVBAR
 =====================
 
 */
+
+.button__badge {
+  background-color: #fa3e3e;
+  border-radius: 20px;
+  color: white;
+ 
+  padding: 0 6px;
+  font-size: 12px;
+  
+  position: absolute;  /*Position the badge within the relatively positioned button */
+  bottom: 35px;
+  right: 2px;
+}
+
 .header {
   width: 100%;
 }
@@ -1566,7 +1580,7 @@ fieldset[disabled] .btn-green.active {
 */
 .btn-transparent {
   color: #555555;
-  background-color: transparent;
+  background-color: #fff;
   border-color: #555555;
 }
 .btn-transparent:hover,
@@ -1575,7 +1589,7 @@ fieldset[disabled] .btn-green.active {
 .btn-transparent.active,
 .open .dropdown-toggle.btn-transparent {
   color: #555555;
-  background-color: rgba(0, 0, 0, 0);
+  background-color: #fff;
   border-color: #373737;
 }
 .btn-transparent:active,
@@ -1598,7 +1612,7 @@ fieldset[disabled] .btn-transparent:active,
 .btn-transparent.disabled.active,
 .btn-transparent[disabled].active,
 fieldset[disabled] .btn-transparent.active {
-  background-color: transparent;
+  background-color: #fff;
   border-color: #555555;
 }
 .btn-transparent .badge {
@@ -1609,7 +1623,7 @@ fieldset[disabled] .btn-transparent.active {
 .btn-transparent:focus,
 .btn-transparent:active,
 .btn-transparent.active {
-  background: #2b90d9;
+  background: #555555;
   color: #ffffff;
 }
 .btn-lg {
