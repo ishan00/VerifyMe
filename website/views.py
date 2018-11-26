@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from django.db.models import Q
+from django.db.models import Q, Max
 from django.forms.models import model_to_dict
 from django.contrib.auth.decorators import login_required
 from .models import Users,Resume,Section,Point,Conversation,Message,Notification,Passwords,Request
@@ -173,8 +173,101 @@ def view_resume(request, alert = ""):
 			sections = Section.objects.filter(resume = resume)
 			section_list = [model_to_dict(obj) for obj in sections]
 			for i in range(len(sections)):
-				points = Point.objects.filter(section = sections[i])
-				section_list[i]['points'] = [ model_to_dict(obj) for obj in points]
+
+				if sections[i].type == "BU":
+					points = Point.objects.filter(section = sections[i]).order_by("position")
+					section_list[i]['points'] = [ model_to_dict(obj) for obj in points]
+				
+				elif sections[i].type == "BL":
+
+					points = Point.objects.filter(section = sections[i]).order_by("position")
+					array = []
+					for single_point in points:
+						single_point = model_to_dict(single_point)
+
+						content = single_point['content']
+						content = content.split("#")
+
+						del single_point['content']
+
+						subpoints = []
+
+						single_point['title_1'] = content[0]
+						single_point['title_2'] = content[1]
+
+						for k in content[2:]:
+							subpoints.append(k)
+
+						single_point['subpoints'] = subpoints
+						array.append(single_point)
+
+					section_list[i]['points'] = array
+
+				elif sections[i].type == "M2":
+
+					points = Point.objects.filter(section = sections[i]).order_by("position")
+
+					array = []
+
+					for single_point in points:
+						single_point = model_to_dict(single_point)
+
+						content = single_point['content']
+						content = content.split("#")
+
+						del single_point['content']
+
+						single_point['title_1'] = content[0]
+						single_point['title_2'] = content[1]
+
+						array.append(single_point)
+
+					section_list[i]['points'] = array
+
+				elif sections[i].type == "M3":
+
+					points = Point.objects.filter(section = sections[i]).order_by("position")
+
+					array = []
+
+					for single_point in points:
+						single_point = model_to_dict(single_point)
+
+						content = single_point['content']
+						content = content.split("#")
+
+						del single_point['content']
+
+						single_point['title_1'] = content[0]
+						single_point['title_2'] = content[1]
+						single_point['title_3'] = content[2]
+
+						array.append(single_point)
+
+					section_list[i]['points'] = array
+				
+				elif sections[i].type == "M4":
+
+					points = Point.objects.filter(section = sections[i]).order_by("position")
+
+					array = []
+
+					for single_point in points:
+						single_point = model_to_dict(single_point)
+
+						content = single_point['content']
+						content = content.split("#")
+
+						del single_point['content']
+
+						single_point['title_1'] = content[0]
+						single_point['title_2'] = content[1]
+						single_point['title_3'] = content[2]
+						single_point['title_4'] = content[3]
+
+						array.append(single_point)
+
+					section_list[i]['points'] = array
 
 			notifications = Notification.objects.filter(receiver = user).order_by("-timestamp")
 
@@ -272,18 +365,23 @@ def add_point_view(request):
 
 		if request.method == "POST":
 
-			# print (request)
+			print (request.POST)
 
 			logged_user_roll = request.session['user']
 			user = Users.objects.get(roll_number = logged_user_roll)
 
 			content = request.POST['content']
 			section_id = request.POST['section_id']
-
-			# print (content,section_id)
+			type = request.POST['type']
 
 			section = Section.objects.get(id=section_id)
-			new_Point = Point.objects.create(section = section, content = content)
+
+			max_position = Point.objects.filter(section = section).aggregate(Max('position')).get('position__max')
+			
+			if max_position == None:
+				max_position = 0
+
+			new_Point = Point.objects.create(section = section, content = content, type = type, position = max_position + 1)
 			
 			return redirect('/resume')
 
@@ -302,9 +400,11 @@ def add_section_view(request):
 				resume = Resume.objects.get(id = request.session['resume_id'])
 
 			title = request.POST['title']
-			# type = re
+			type = request.POST['type']
 
-			new_section = Section.objects.create(resume = resume, title = title)
+			print (type)
+
+			new_section = Section.objects.create(resume = resume, title = title, type = type)
 
 			sections = Section.objects.filter(resume = resume)
 			section_list = [model_to_dict(obj) for obj in sections]
@@ -394,7 +494,6 @@ def view_messages(request):
 				request.session['conversation_id'] = latest_conversation
 
 			latest_conversation = Conversation.objects.get(id=latest_conversation)
-
 
 			messages = Message.objects.filter(conversation = latest_conversation)
 
@@ -550,10 +649,7 @@ def request_action_view(request):
 			point.save()
 			request1.delete()
 
-
 			return redirect('/')
-
-
 
 @csrf_exempt
 def upload(request):	
@@ -576,6 +672,7 @@ def upload(request):
 		return redirect('/')
 
 def get_files(request):	
+
 	if request.session.get('user') != None:
 
 		if request.method == "GET":
@@ -593,7 +690,6 @@ def get_files(request):
 				file_list = os.listdir("media/"+point_id)
 		
 			return JsonResponse({'data': file_list, 'point_id' : point_id})
-
 
 	else:
 		return redirect('/')
@@ -614,12 +710,12 @@ def delete_file(request):
 		
 			return JsonResponse({})
 
-
 	else:
 		return redirect('/')
 
 
 def mark_as_read(request):	
+
 	if request.session.get('user') != None:
 
 		if request.method == "GET":
@@ -632,6 +728,37 @@ def mark_as_read(request):
 				notification.save()		
 			return JsonResponse({})
 
+	else:
+		return redirect('/')
+
+@csrf_exempt
+def reorder_section_view(request):
+
+	if request.session.get('user') != None:
+
+		if request.method == "GET":
+
+			logged_user_roll = request.session['user']
+			user = Users.objects.get(roll_number = logged_user_roll)			
+			
+			section_id = request.GET['section']
+			section_id = section_id[0]
+	
+			section = Section.objects.get(id = section_id)
+
+			if section.resume.user == user:
+
+				new_order = request.GET['points']
+				new_order = new_order.split(',')
+				del new_order[-1]
+
+				for j in range(len(new_order)):
+
+					point = Point.objects.get(id = new_order[j])
+					point.position = j
+					point.save()
+				
+				return JsonResponse({})
 
 	else:
 		return redirect('/')

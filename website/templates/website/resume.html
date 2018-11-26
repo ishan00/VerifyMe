@@ -22,6 +22,26 @@
 		.handles span {
 			cursor: move;
 		}
+		.handles2 {
+			/*margin: auto;*/
+			padding: 0;
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+		.handles2 li {
+			list-style: none;
+			/*font-family: "Tahoma";
+			color: #1C94C4;*/
+			margin: 2px;
+			height: 40px;
+		}
+		.handles2 span {
+			cursor: move;
+		}
 		/*
 		li.disabled {
 			opacity: 0.5;
@@ -62,63 +82,201 @@
 	   						</ul>
 	  					</div>
   					</center>
-  					<ul class="handles list">
-		  				{% for point in section.points %}
-							<li>
+  					{% if section.type == 'BU' %}
+  						<ul id = {{section.id}} class="handles list">
+			  				{% for point in section.points %}
+								<li id = {{point.id}}>
+					  				<div class="input-group mb-3" style="margin-bottom: 5px;">
+					  					{% if point.status == 'V' %}
+					  						<input type="text" class="form-control" value="{{ point.content }}" readonly style="background-color: #429244; color: #fff;">
+					  						<span class="input-group-btn">
+						  						<button class="btn btn-green dropdown-toggle" style = "width : 40px;" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+						    					<ul class="dropdown-menu dropdown-menu-right">
+						        					<li><a href='#'  onClick = "return openUploadModal({{point.id}});">Proofs</a></li>
+						        					<li><a href='#'  onClick = "return deletePoint({{point.id}});">Delete</a></li>
+						   						</ul>
+					  						</span>
+					  					{% elif point.status == 'R' %}
+					  						<input type="text" class="form-control" value="{{ point.content }}" readonly style="background-color: #ff3f3f; color: #fff;">
+					  						<span class="input-group-btn">
+						  						<button class="btn btn-red dropdown-toggle" style = "width : 40px;" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+						    					<ul class="dropdown-menu dropdown-menu-right">
+						        					<li><a href = '#' onClick = "return openSendModal({{point.id}});">Resend</a></li>
+						        					<li><a href='#'  onClick = "return openUploadModal({{point.id}});">Proofs</a></li>
+						        					<li><a href = '#' onClick = "return openCommentModal('{{point.comment}}');">Comment</a></li>
+						        					<li><a href='#'  onClick = "return deletePoint({{point.id}});">Delete</a></li>
+						   						</ul>
+
+						    					<!-- <button class="btn btn-green" type="button"><i class="fas fa-check"></i></button> -->
+					  						</span>
+					  					{% else %}	
+					  						<input type="text" class="form-control" value="{{ point.content }}" readonly>
+					  						<span class="input-group-btn">
+						  						<button class="btn btn-primary dropdown-toggle" style = "width : 40px;" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+						    					<ul class="dropdown-menu dropdown-menu-right">
+						        					<li><a href = '#' onClick = "return openSendModal({{point.id}});">Send</a></li>
+						        					<li><a href='#'  onClick = "return openUploadModal({{point.id}});">Proofs</a></li>
+						        					<li><a href='#'  onClick = "return deletePoint({{point.id}});">Delete</a></li>
+						   						</ul>
+
+						    					<!-- <button class="btn btn-green" type="button"><i class="fas fa-check"></i></button> -->
+					  						</span>
+					  					{% endif %}
+					  				</div>
+				  				</li>
+			  				{% endfor %}
+				  			<li class="disabled">
 				  				<div class="input-group mb-3" style="margin-bottom: 5px;">
-				  					{% if point.status == 'V' %}
-				  						<input type="text" class="form-control" value="{{ point.content }}" readonly style="background-color: #429244; color: #fff;">
-				  						<span class="input-group-btn">
-					  						<button class="btn btn-green dropdown-toggle" style = "width : 40px;" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
-					    					<ul class="dropdown-menu dropdown-menu-right">
-					        					<li><a href='#'  onClick = "return openUploadModal({{point.id}});">Proofs</a></li>
-					        					<li><a href='#'  onClick = "return deletePoint({{point.id}});">Delete</a></li>
-					   						</ul>
-				  						</span>
-				  					{% elif point.status == 'R' %}
-				  						<input type="text" class="form-control" value="{{ point.content }}" readonly style="background-color: #ff3f3f; color: #fff;">
-				  						<span class="input-group-btn">
-					  						<button class="btn btn-red dropdown-toggle" style = "width : 40px;" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
-					    					<ul class="dropdown-menu dropdown-menu-right">
-					        					<li><a href = '#' onClick = "return openSendModal({{point.id}});">Resend</a></li>
-					        					<li><a href='#'  onClick = "return openUploadModal({{point.id}});">Proofs</a></li>
-					        					<li><a href = '#' onClick = "return openCommentModal('{{point.comment}}');">Comment</a></li>
-					        					<li><a href='#'  onClick = "return deletePoint({{point.id}});">Delete</a></li>
-					   						</ul>
+				  					<input type="text" class="form-control" id = "{{section.id}}">
+				  					<span class="input-group-btn">
+				    					<button class="btn btn-green" style = "width : 40px;" type="submit" onclick="add_point({{section.id}},'{{section.type}}')"><i class="fas fa-arrow-right"></i></button>
+				  					</span>
+					  			</div>
+				  			</li>
+			  			</ul>
 
-					    					<!-- <button class="btn btn-green" type="button"><i class="fas fa-check"></i></button> -->
+			  		{% elif section.type == 'BL' %}
+			  			
+			  			{% for point in section.points %}
+							<div class="row">
+								<div class="col-sm-4">
+									<input type="text" value="{{ point.title_1 }}" class="form-control" readonly>
+								</div>
+								<div class="col-sm-4"></div>
+								<div class="col-sm-4">
+									<div class="input-group mb-3" style="margin-bottom: 5px;">
+										<input value="{{ point.title_2 }}" type="text" class="form-control" readonly>
+										<span class="input-group-btn">
+		    								<button class="btn btn-green" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
 				  						</span>
-				  					{% else %}	
-				  						<input type="text" class="form-control" value="{{ point.content }}" readonly>
-				  						<span class="input-group-btn">
-					  						<button class="btn btn-primary dropdown-toggle" style = "width : 40px;" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
-					    					<ul class="dropdown-menu dropdown-menu-right">
-					        					<li><a href = '#' onClick = "return openSendModal({{point.id}});">Send</a></li>
-					        					<li><a href='#'  onClick = "return openUploadModal({{point.id}});">Proofs</a></li>
-					        					<li><a href='#'  onClick = "return deletePoint({{point.id}});">Delete</a></li>
-					   						</ul>
-
-					    					<!-- <button class="btn btn-green" type="button"><i class="fas fa-check"></i></button> -->
-				  						</span>
-				  					{% endif %}
+				  					</div>
 				  				</div>
-			  				</li>
-		  				{% endfor %}
-			  			<li class="disabled">
-			  				<div class="input-group mb-3" style="margin-bottom: 5px;">
-			  					<input type="text" class="form-control" id = "{{section.id}}">
-			  					<span class="input-group-btn">
-			    					<button class="btn btn-green" style = "width : 40px;" type="submit" onclick="add_point({{section.id}})"><i class="fas fa-check"></i></button>
-			  					</span>
 				  			</div>
-			  			</li>
-		  			</ul>
+				  			{% for subpoint in point.subpoints %}
+				  			<div>
+		  						<div class="input-group mb-3" style="margin-bottom: 5px;">
+			  						<input type="text" class="form-control" value = "{{subpoint}}" readonly>
+			  						<span class="input-group-btn">
+			    						<button class="btn btn-green" style = "width : 40px;" type="submit" disabled><i class="fas fa-ban"></i></button>
+			  						</span>
+				  				</div>
+				  			</div>
+				  			{% endfor %}
+			  			{% endfor %}
+
+						<div class="row">
+							<div class="col-sm-4">
+								<input id = "{{section.id}}-title-1" type="text" class="form-control">
+							</div>
+							<div class="col-sm-4"></div>
+							<div class="col-sm-4">
+								<div class="input-group mb-3" style="margin-bottom: 5px;">
+									<input id = "{{section.id}}-title-2" type="text" class="form-control">
+									<span class="input-group-btn">
+	    								<button class="btn btn-green" style = "width : 40px;" type="submit" onclick="add_point({{section.id}},'{{section.type}}')"><i class="fas fa-arrow-right"></i></button>
+			  						</span>
+			  					</div>
+			  				</div>
+			  			</div>
+			  			<div id = "{{section.id}}">
+	  						<div id = "{{section.id}}-sub-1" class="input-group mb-3" style="margin-bottom: 5px;">
+		  						<input id = "{{section.id}}-subpoint-1" type="text" class="form-control">
+		  						<span id = "{{section.id}}-subspan-1" class="input-group-btn">
+		    						<button class="btn btn-green" style = "width : 40px;" type="submit" onclick="add_subpoint({{section.id}})"><i class="fas fa-plus"></i></button>
+		  						</span>
+			  				</div>
+			  			</div>
+
+			  		{% elif section.type == 'M2' %}
+
+			  			{% for point in section.points %}
+			  				<div class="input-group mb-3" style="margin-bottom: 5px;">
+								<input type="text" value = "{{point.title_1}}" class="form-control" readonly/>
+								<span class="input-group-addon" style="width:1px;"></span>
+								<input type="text" value = "{{point.title_2}}" class="form-control" readonly/>
+								<span class="input-group-btn">
+			    					<button class="btn btn-green" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
+			  					</span>
+							</div>
+			  			{% endfor %}
+
+			  			<div class="input-group mb-3" style="margin-bottom: 5px;">
+							
+							<input id = "{{section.id}}-1" type="text" class="form-control"/>
+							<span class="input-group-addon" style="width:1px;"></span>
+							<input id = "{{section.id}}-2" type="text" class="form-control"/>
+							<span class="input-group-btn">
+		    					<button class="btn btn-green" style = "width : 40px;" type="submit" onclick="add_point({{section.id}},'{{section.type}}')"><i class="fas fa-arrow-right"></i></button>
+		  					</span>
+						</div>
+
+					{% elif section.type == 'M3' %}
+
+						{% for point in section.points %}
+			  				<div class="input-group mb-3" style="margin-bottom: 5px;">
+								<input type="text" value = "{{point.title_1}}" class="form-control" readonly/>
+								<span class="input-group-addon" style="width:1px;"></span>
+								<input type="text" value = "{{point.title_2}}" class="form-control" readonly/>
+								<span class="input-group-addon" style="width:1px;"></span>
+								<input type="text" value = "{{point.title_3}}" class="form-control" readonly/>
+								<span class="input-group-btn">
+			    					<button class="btn btn-green" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
+			  					</span>
+							</div>
+			  			{% endfor %}
+
+			  			<div class="input-group mb-3" style="margin-bottom: 5px;">
+							
+							<input id = "{{section.id}}-1" type="text" class="form-control"/>
+							<span class="input-group-addon" style="width:1px;"></span>
+							<input id = "{{section.id}}-2" type="text" class="form-control"/>
+							<span class="input-group-addon" style="width:1px;"></span>
+							<input id = "{{section.id}}-3" type="text" class="form-control"/>
+							<span class="input-group-btn">
+		    					<button class="btn btn-green" style = "width : 40px;" type="submit" onclick="add_point({{section.id}},'{{section.type}}')"><i class="fas fa-arrow-right"></i></button>
+		  					</span>
+						</div>
+
+					{% elif section.type == 'M4' %}
+
+						{% for point in section.points %}
+							<div class="input-group mb-3" style="margin-bottom: 5px;">
+								<input type="text" value = "{{point.title_1}}" class="form-control" readonly/>
+								<span class="input-group-addon" style="width:1px;"></span>
+								<input type="text" value = "{{point.title_2}}" class="form-control" readonly/>
+								<span class="input-group-addon" style="width:1px;"></span>
+								<input type="text" value = "{{point.title_3}}" class="form-control" readonly/>
+								<span class="input-group-addon" style="width:1px;"></span>
+								<input type="text" value = "{{point.title_4}}" class="form-control" readonly/>
+								<span class="input-group-btn">
+			    					<button class="btn btn-green" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
+			  					</span>
+							</div>	
+			  			{% endfor %}
+
+			  			<div class="input-group mb-3" style="margin-bottom: 5px;">
+							
+							<input id = "{{section.id}}-1" type="text" class="form-control"/>
+							<span class="input-group-addon" style="width:1px;"></span>
+							<input id = "{{section.id}}-2" type="text" class="form-control"/>
+							<span class="input-group-addon" style="width:1px;"></span>
+							<input id = "{{section.id}}-3" type="text" class="form-control"/>
+							<span class="input-group-addon" style="width:1px;"></span>
+							<input id = "{{section.id}}-4" type="text" class="form-control"/>
+							<span class="input-group-btn">
+		    					<button class="btn btn-green" style = "width : 40px;" type="submit" onclick="add_point({{section.id}},'{{section.type}}')"><i class="fas fa-arrow-right"></i></button>
+		  					</span>
+						</div>
+
+			  		{% endif %}
 				{% endfor %}
 				<!-- Single Point -->
 
-  				<center><div class="btn-group" style="margin-top: 25px;">
-  				<button type="button" class="btn btn-primary custom-width" data-toggle="modal" data-target="#myModal">Add Section</button>
-  				</div></center>
+  				<center>
+  					<div class="btn-group" style="margin-top: 25px;">
+  						<button type="button" class="btn btn-primary custom-width" data-toggle="modal" data-target="#myModal">Add Section</button>
+  					</div>
+  				</center>
 				  <!-- Modal -->
 				  
 			<div class="col-sm-1"></div>
@@ -141,9 +299,11 @@
 				          Title: <input type=text id=section-title name='title'><br>
 				          Type: <select class="form-control" placeholder="Department" name="type">
 							<option value="">Choose a type</option>
-							<option value="CS">Bullet</option>
-							<option value="EE">Block</option>
-							<option value="EE">Block</option>
+							<option value="BU">Bullet</option>
+							<option value="BL">Block</option>
+							<option value="M2">Two Columns</option>
+							<option value="M3">Three Columns</option>
+							<option value="M4">Four Columns</option>
 						</select>
 						<div class='modal-footer'>
 				          <input type=submit id="_create_" class="btn btn-primary">
@@ -256,10 +416,44 @@
 {% block javascript %}
 	<script type="text/javascript">
 
-		function add_point(id){
+		function add_subpoint(id){
+			console.log(id);
+
+			var i = 1;
+			while(document.getElementById(id + "-sub-" + i) != null){
+				i++;
+			}
+			i--;
+
+			var x = document.getElementById(id + "-sub-" + i);
+			
+			var cln1 = x.cloneNode(true);
+
+			var xx = x.childNodes[3];
+			
+			var xxx = xx.childNodes[1];
+			
+			xxx.removeAttribute("onclick");
+
+			i++;
+
+			var new_id = cln1.id;
+			new_id = new_id.split("-");
+			cln1.id = new_id[0] + "-sub-" + i;
+
+			cln1.childNodes[1].id = new_id[0] + "-subpoint-" + i;
+			cln1.childNodes[1].value = "";
+			cln1.childNodes[3].id = new_id[0] + "-subspan-" + i;
+
+			document.getElementById(id).appendChild(cln1);
+		}
+
+		function add_point(id,type){
+
 			var form = document.createElement("form");
 			var element1 = document.createElement("input");
 			var element2 = document.createElement("input");
+			var element3 = document.createElement("input");
 			
 			var att1 = document.createAttribute("type");
 			att1.value = "hidden";
@@ -267,20 +461,76 @@
 			var att2 = document.createAttribute("type");
 			att2.value = "hidden";
 
+			var att3 = document.createAttribute("type");
+			att3.value = "hidden";
+
 			element1.setAttributeNode(att1);
 			element2.setAttributeNode(att2);
+			element3.setAttributeNode(att3);
 			
 			form.method = "POST";
 			form.action = "/add_point/";
 			
-			element1.value = document.getElementById(id).value;
 			element1.name = "content";
 
+			if (type == "BU"){
+
+				element1.value = document.getElementById(id).value;	
+			}
+			else if (type == "BL"){
+
+				var title_1 = document.getElementById(id + "-title-1").value;
+				var title_2 = document.getElementById(id + "-title-2").value;
+
+				var s = title_1 + "#" + title_2;
+
+				var i = 1;
+
+				while(document.getElementById(id + "-subpoint-" + i)){
+					var t = document.getElementById(id + "-subpoint-" + i).value;
+					s += "#" + t;
+					i++;
+				}
+
+				element1.value = s;
+			}
+			else if (type == "M2"){
+
+				var s = document.getElementById(id + "-1").value;
+				s += "#" + document.getElementById(id + "-2").value;
+
+				element1.value = s;
+
+			}
+			else if (type == "M3"){
+
+				var s = document.getElementById(id + "-1").value;
+				s += "#" + document.getElementById(id + "-2").value;
+				s += "#" + document.getElementById(id + "-3").value;
+
+				element1.value = s;
+
+			}
+			else if (type == "M4"){
+
+				var s = document.getElementById(id + "-1").value;
+				s += "#" + document.getElementById(id + "-2").value;
+				s += "#" + document.getElementById(id + "-3").value;
+				s += "#" + document.getElementById(id + "-4").value;
+
+				element1.value = s;
+
+			}
+	
 			element2.value = id;
-			element2.name = 'section_id';
+			element2.name = "section_id";
+
+			element3.value = type;
+			element3.name = "type";
 
 			form.appendChild(element1);
 			form.appendChild(element2);
+			form.appendChild(element3);
 
 			document.body.appendChild(form);
 			form.submit();
@@ -370,7 +620,19 @@
 			$('.handles').sortable({
 				handle: 'span',
 				items: ':not(.disabled)'
+			}).bind('sortupdate', function(){
+				//console.log(this.id);
+				var new_order = [];
+				var c = this.children;
+				for (i = 0; i < c.length; i++) {
+					//console.log(c[i].id);
+					new_order.push(c[i].id);
+				}
+				var xhttp = new XMLHttpRequest();
+                xhttp.open("GET", "/reorder_section/?section="+this.id+"&points="+new_order.toString(), true);
+        		xhttp.send(); 
 			});
 		});
+
 	</script>
 {% endblock javascript %}

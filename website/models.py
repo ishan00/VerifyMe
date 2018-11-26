@@ -2,6 +2,14 @@ from django.db import models
 from django.utils import timezone
 
 POINT_TYPE = (
+	('BU','Bullet'),
+	('BL','Block'),
+	('M2','2 Columns'),
+	('M3','3 Columns'),
+	('M4','4 Columns'),
+)
+
+POINT_STATUS = (
 	('N','None'),
 	('F','Freeze'),
 	('P','Pending'),
@@ -63,6 +71,7 @@ class Section(models.Model):
 
 	resume = models.ForeignKey('Resume', on_delete = models.CASCADE)
 	title = models.CharField(max_length = 100)
+	type = models.CharField(max_length = 2, choices = POINT_TYPE, default = 'BU')
 
 	def __str__(self):
 		return str(self.id)
@@ -74,9 +83,9 @@ class Point(models.Model):
 
 	position = models.IntegerField(editable = False, default = 0)
 
-	type = models.CharField(max_length = 1, choices = POINT_TYPE, editable = False, default = 'N')
+	type = models.CharField(max_length = 2, choices = POINT_TYPE, editable = False, default = 'BU')
 
-	status = models.CharField(max_length = 1, choices = POINT_TYPE, default = 'P')
+	status = models.CharField(max_length = 1, choices = POINT_STATUS, default = 'P')
 	
 	content = models.TextField(default = '')
 
