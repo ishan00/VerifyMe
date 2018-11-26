@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from django.db.models import Q
+from django.db.models import Q, Max
 from django.forms.models import model_to_dict
 from django.contrib.auth.decorators import login_required
 from .models import Users,Resume,Section,Point,Conversation,Message,Notification,Passwords,Request
@@ -270,18 +270,23 @@ def add_point_view(request):
 
 		if request.method == "POST":
 
-			# print (request)
+			print (request.POST)
 
 			logged_user_roll = request.session['user']
 			user = Users.objects.get(roll_number = logged_user_roll)
 
 			content = request.POST['content']
 			section_id = request.POST['section_id']
-
-			# print (content,section_id)
+			type = request.POST['type']
 
 			section = Section.objects.get(id=section_id)
-			new_Point = Point.objects.create(section = section, content = content)
+
+			max_position = Point.objects.filter(section = section).aggregate(Max('position')).get('position__max')
+			
+			if max_position == None:
+				max_position = 0
+
+			new_Point = Point.objects.create(section = section, content = content, type = type, position = max_position + 1)
 			
 			return redirect('/resume')
 
