@@ -41,9 +41,9 @@ class Users(models.Model):
 	name = models.CharField(max_length = 50)
 	department = models.CharField(max_length = 2, choices = LIST_OF_DEPARTMENTS)
 	#year = models.CharField(max_length = 2,choices = LIST_OF_YEARS)
-
+	image = models.CharField(max_length = 100, default = 'profiles/default/default.png')
 	privilege = models.BooleanField(default = False)
-	position = models.CharField(max_length = 100, default = '')
+	position = models.CharField(max_length = 100, null = True)
 
 	def __str__(self):
 		return str(self.id)

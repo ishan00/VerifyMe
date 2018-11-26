@@ -19,6 +19,8 @@ def protected_serve(request,path,document_root=None,show_indexes=False):
 		logged_user_roll = request.session['user']
 		user = Users.objects.get(roll_number = logged_user_roll)
 		point_id = path.split('/')[0].strip()
+		if(point_id == 'profiles'):
+			return serve(request, path, document_root, show_indexes)
 		point = Point.objects.get(id=point_id)
 		if point.section.resume.user != user:
 			requests = Request.objects.filter(receiver=user)
@@ -131,7 +133,7 @@ def home_view(request):
 		return redirect('/')
 
 
-def profile_view(request):
+def profile_view(request, alert=""):
 
 	if request.session.get('user') != None:
 
@@ -148,7 +150,7 @@ def profile_view(request):
 
 		privileged_user = Users.objects.filter(privilege = True)
 
-		return render(request, 'website/profile.html', {'user':user, 'notifications':notifications, 'notification_count':count, 'privileged_user':privileged_user})
+		return render(request, 'website/profile.html', {'user':user, 'notifications':notifications, 'notification_count':count, 'privileged_user':privileged_user, 'alert' : alert})
 
 	else:
 
@@ -399,7 +401,9 @@ def view_messages(request):
 		else:
 			messages = ''
 
-		return render(request, 'website/messages.html', {'user':user, 'notifications':notifications, 'conversations':conversations_list, 'messages':messages})
+		print
+
+		return render(request, 'website/messages.html', {'user':user, 'notifications':notifications, 'conversations':conversations_list, 'messages':messages, 'active_conversation':latest_conversation.id})
 
 		'''
 		if request.session.get('resume_id') != None:
@@ -640,14 +644,14 @@ def change_list(request):
 			logged_user_roll = request.session['user']
 			user = Users.objects.get(roll_number = logged_user_roll)
 
-			text = request.GET['text']
+			text = request.GET['text'].lower()
 			length = len(text)
 			users = Users.objects.all()
 			users = [model_to_dict(obj) for obj in users]
 			user_list = []
 
 			for user in users:
-				if user['roll_number'][:length] == text or user['name'][:length] == text:
+				if user['roll_number'].lower()[:length] == text or user['name'].lower()[:length] == text:
 					print(user)
 					user_list.append({'key': user['name'] + ' ' + user['roll_number'], 'value':user['roll_number']})
 	
@@ -675,6 +679,66 @@ def create_conversation(request):
 			
 			return redirect('/messages/')
 
+
+	else:
+		return redirect('/')
+
+@csrf_exempt
+def reset_password(request):
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+			logged_user_roll = request.session['user']
+
+			curr_pass = request.POST['curr_pass']
+			new_pass = request.POST['new_pass']
+
+			password = Passwords.objects.get(roll_number = logged_user_roll)
+			if (password.password == curr_pass):
+				password.password = new_pass;
+				password.save();
+				return profile_view(request, "Successfully updated password")
+			else:
+				return profile_view(request, "Could not change password")
+
+	else:
+		return redirect('/')
+
+def update_profile(request):
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+			logged_user_roll = request.session['user']
+			user = Users.objects.get(roll_number = logged_user_roll)
+
+			name = request.POST['name']
+			department = request.POST['department']
+
+			user.name = name;
+			user.department = department;
+			user.save();
+			return profile_view(request, "Successfully updated details"); 
+
+	else:
+		return redirect('/')
+
+@csrf_exempt
+def upload_profile_image(request):
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+			logged_user_roll = request.session['user']
+			user = Users.objects.get(roll_number = logged_user_roll)
+			files = request.FILES.getlist('file')
+			for file in files:
+				path = Path("media/profiles/"+logged_user_roll);
+				if(path.is_dir()):
+					for old_file in os.listdir("media/profiles/" + logged_user_roll):
+						os.remove("media/profiles/"+logged_user_roll+ '/' +old_file)
+				file_name = default_storage.save( 'profiles/'+ logged_user_roll + '/' + file.name, file)
+				user.image = file_name;
+				user.save();
+			return redirect('/profile/')
 
 	else:
 		return redirect('/')

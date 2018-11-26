@@ -29,5 +29,8 @@ urlpatterns = [
 	path('send_message/', views.send_message, name = 'send_message'),
 	path('change_conversation/', views.change_conversation, name = 'change_conversation'),
 	path('change_list/', views.change_list, name = 'change_list'),
-	path('create_conversation/', views.create_conversation, name = 'create_conversation')
+	path('create_conversation/', views.create_conversation, name = 'create_conversation'),
+	path('reset_password/', views.reset_password, name = 'reset_password'),
+	path('update_profile/', views.update_profile, name = 'update_profile'),
+	path('upload_profile_image/', views.upload_profile_image, name = 'upload_profile_image')
 ]

@@ -25,7 +25,9 @@
             {% else %}
             <li style="background: #eee">
             {% endif %}
-            <div class="col-md-3 col-sm-3 col-xs-3"><div class="notify-img"><img src="http://placehold.it/45x45" alt=""></div></div>
+            <div class="col-md-3 col-sm-3 col-xs-3"><div class="notify-img">
+                <img src="/media/{{notification.sender.image}}" alt="" style="border-radius: 50%; width: 100%; height: 100%;">
+            </div></div>
             <div class="col-md-9 col-sm-9 col-xs-9 pd-l0">
                 {% if notification.n_type == 0  %}
                     <span>{{ notification.sender.name }} verified the below point in {{ notification.point.section.title }} of {{ notification.point.section.resume.title }}</span><br>
@@ -51,7 +53,7 @@
 <li class="dropdown">
     <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fas fa-cog"></i></a>
     <ul class="dropdown-menu">
-        <li><a href="">Profile</a></li>
+        <li><a href="/profile/">Profile</a></li>
         <li><a href="/logout">Logout</a></li>
     </ul>
 </li>

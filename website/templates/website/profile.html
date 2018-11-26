@@ -16,29 +16,60 @@
 				<h3 align="center" class="site-subtitle">({{ user.position }})</h3>
 			{% endif %}
 			<br>
-			<h3
 		</div>
 		<div class="row">
 			<div class="col-sm-4">
-				<img src="https://ptetutorials.com/images/user-profile.png" alt="sunil">			
+				<h4 align="center" class="site-subtitle">User Picture</h4>
+				<div class="user_profile_container" width="70%" height="70%">
+					<center>
+						<img src="/media/{{user.image}}" alt="sunil" id="user_profile_photo">
+						<div class="user_profile_overlay">
+					      <div style="cursor: pointer;"  onClick="return clickInput(); " class="user_profile_icon"> <i class="fa fa-edit"> </i></div>
+					    </div>
+					</center>		
+				</div>
 			</div>
 			<div class="col-sm-4">
-				<form name="_login_form_" onsubmit="return login_form()" method="post">{% csrf_token %}
-					<p id = "_login_">{{ login_status }}</p>
+				<h4 align="center" class="site-subtitle">General</h4>
+				<form name="_login_form_" action="/update_profile/" onsubmit="return detail_form()" method="post">{% csrf_token %}
 					<div class="form-group">
-						<input type="text" value="{{ user.name }}" class="form-control" name="name" placeholder="Name">
+						<input type="text" value="{{ user.name }}" class="form-control" name="name" id="name" placeholder="Name">
 					</div>
 					<div class="form-group">
-						<input type="text" value="{{ user.roll_number }}" class="form-control" name="roll_number" readonly>
+						<input type="text" value="{{ user.roll_number }}" class="form-control" name="roll_number" id="roll_number" readonly>
 					</div>
 					<div class="form-group">
-						<input type="text" value="{{ user.department }}" class="form-control" name="department" placeholder="Department">
+						<select value="{{ user.department }}" class="form-control" placeholder="Department" name="department" id="department">
+							<option value="EE">Electrical Engineering</option>
+							<option value="CE">Civil Engineering</option>
+							<option value="MA">Mathematics</option>
+							<option value="CS">Computer Science and Engineering</option>
+						</select>
 					</div>
 					<div class="form-group">
-						<input type="text" value="{{ user.position }}" class="form-control" name="position" readonly>
+						<input type="text" value="{{ user.position }}" class="form-control" name="position" id="position" readonly>
 					</div>
+					<div id = "_detail_inc_" style="color: #f00;"><br><br></div>
 					<p class="text-center">
 						<button type="submit" class="btn btn-primary">Save Changes</button>
+					</p>
+				</form>
+			</div>	
+			<div class="col-sm-4">
+				<h4 align="center" class="site-subtitle">Security</h4>
+				<form name="_login_form_" action="/reset_password/" onsubmit="return pass_form()" method="post">{% csrf_token %}
+					<div class="form-group">
+						<input type="password" class="form-control" name="curr_pass" id="curr_pass" placeholder="Current Password">
+					</div>
+					<div class="form-group">
+						<input type="password" class="form-control" name="new_pass" id="new_pass" placeholder="New Password">
+					</div>
+					<div class="form-group">
+						<input type="password" class="form-control" name="conf_new_pass" id="conf_new_pass" placeholder="Confirm New Password">
+					</div>
+					<div id = "_pass_unmatch_" style="color: #f00;"><br><br></div>
+					<p class="text-center">
+						<button type="submit" class="btn btn-primary">Change Password</button>
 					</p>
 				</form>
 			</div>	
@@ -46,4 +77,63 @@
 	</div>
 </section>
 
+
+
+<script>
+
+	function pass_form(){
+		var currPass = document.getElementById("curr_pass").value;
+		var newPass = document.getElementById("new_pass").value;	
+		var confNewPass = document.getElementById("conf_new_pass").value;
+
+		if (currPass == "" || newPass == "") {
+			document.getElementById("_pass_unmatch_").innerHTML = "Password field cannot be empty <br> <br>";
+			return false;
+		}
+		else if (newPass == confNewPass) return true;
+		else {
+			document.getElementById("_pass_unmatch_").innerHTML = "Passwords do not match <br> <br>";
+			return false;
+		}
+	}
+
+	function detail_form(){
+		var name = document.getElementById("name").value;
+
+		if (name == "") {
+			document.getElementById("_detail_inc_").innerHTML = "Name field cannot be empty <br> <br>";
+			return false;
+		}
+		else return true;
+	}
+
+	document.getElementById("department").value = "{{user.department}}";
+	function clickInput(){
+					// console.log('id = '+ id);
+			var form = document.createElement("form");
+			var element = document.createElement("input");
+			form.method = "POST";
+			form.action = "/upload_profile_image/";
+			element.setAttribute("type", "file");
+			// form.setAttribute("id", "form1");
+			// element.setAttribute("id", "image1");
+			// element.setAttribute("onChange", "'submitForm();'");
+			element.name = "file";
+			element.onchange = function(){
+				form.submit();
+			}
+			form.appendChild(element);
+			form.enctype = "multipart/form-data";
+			document.body.appendChild(form);
+			element.click();
+			return false;
+	}
+</script>
+
+{% if alert %}
+	<script> 
+		window.history.pushState({},null,"/profile");
+		alert("{{alert}}");
+	</script>
+{% endif %}
 {% endblock content %}
