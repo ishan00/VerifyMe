@@ -130,6 +130,30 @@ def home_view(request):
 		return redirect('/')
 
 
+def profile_view(request):
+
+	if request.session.get('user') != None:
+
+		logged_user_roll = request.session['user']
+		
+		user = Users.objects.get(roll_number = logged_user_roll)
+
+		notifications = Notification.objects.filter(receiver = user).order_by("-timestamp")
+
+		count = 0
+		for n in notifications:
+			if not n.seen:
+				count += 1
+
+		privileged_user = Users.objects.filter(privilege = True)
+
+		return render(request, 'website/profile.html', {'user':user, 'notifications':notifications, 'notification_count':count, 'privileged_user':privileged_user})
+
+	else:
+
+		return redirect('/')
+
+
 @csrf_exempt
 def view_resume(request, alert = ""):
 

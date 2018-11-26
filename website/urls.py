@@ -8,6 +8,7 @@ urlpatterns = [
 	re_path(r'^media/(?P<path>.*)$', views.protected_serve, {'document_root': settings.MEDIA_ROOT}),
 	path('', views.login_view, name = 'login_view'),
 	path('home/',views.home_view, name = 'home_view'),
+	path('profile/',views.profile_view, name = 'profile_view'),
 	path('resume/', views.view_resume, name = 'view_resume'),
 	path('messages/', views.view_messages, name = 'view_messages'),
 	path('logout/', views.logout_view, name = 'logout_view'),
