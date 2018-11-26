@@ -33,5 +33,7 @@ urlpatterns = [
 	path('create_conversation/', views.create_conversation, name = 'create_conversation'),
 	path('reset_password/', views.reset_password, name = 'reset_password'),
 	path('update_profile/', views.update_profile, name = 'update_profile'),
-	path('upload_profile_image/', views.upload_profile_image, name = 'upload_profile_image')
+	path('upload_profile_image/', views.upload_profile_image, name = 'upload_profile_image'),
+	path('open_conversation/', views.open_conversation, name = 'open_conversation'),
+	path('transfer_privilege/', views.transfer_privilege, name = 'transfer_privilege')
 ]

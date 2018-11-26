@@ -88,14 +88,18 @@
 								<li id = {{point.id}}>
 					  				<div class="input-group mb-3" style="margin-bottom: 5px;">
 					  					{% if point.status == 'V' %}
-					  						<input type="text" class="form-control" value="{{ point.content }}" readonly style="background-color: #429244; color: #fff;">
+					  						<!-- <div class='tooltip'> -->
+					  						<input type="text" class="form-control" value="{{ point.content }}" readonly style="background-color: #429244; color: #fff;" >
 					  						<span class="input-group-btn">
 						  						<button class="btn btn-green dropdown-toggle" style = "width : 40px;" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
 						    					<ul class="dropdown-menu dropdown-menu-right">
 						        					<li><a href='#'  onClick = "return openUploadModal({{point.id}});">Proofs</a></li>
+						        					<li><a href='#'  onClick = "return openConversation({{point.id}});">Message</a></li>
 						        					<li><a href='#'  onClick = "return deletePoint({{point.id}});">Delete</a></li>
 						   						</ul>
 					  						</span>
+					  							<!-- <span class="tooltiptext"><a href="sdvd" >Tooltip text</a></span> -->
+					  						<!-- </div> -->
 					  					{% elif point.status == 'R' %}
 					  						<input type="text" class="form-control" value="{{ point.content }}" readonly style="background-color: #ff3f3f; color: #fff;">
 					  						<span class="input-group-btn">
@@ -103,6 +107,7 @@
 						    					<ul class="dropdown-menu dropdown-menu-right">
 						        					<li><a href = '#' onClick = "return openSendModal({{point.id}});">Resend</a></li>
 						        					<li><a href='#'  onClick = "return openUploadModal({{point.id}});">Proofs</a></li>
+						        					<li><a href='#'  onClick = "return openConversation({{point.id}});">Message</a></li>
 						        					<li><a href = '#' onClick = "return openCommentModal('{{point.comment}}');">Comment</a></li>
 						        					<li><a href='#'  onClick = "return deletePoint({{point.id}});">Delete</a></li>
 						   						</ul>
@@ -122,6 +127,7 @@
 						    					<!-- <button class="btn btn-green" type="button"><i class="fas fa-check"></i></button> -->
 					  						</span>
 					  					{% endif %}
+					  					<!-- <span class="tooltiptext1">{{point.comment}}</span> -->
 					  				</div>
 				  				</li>
 			  				{% endfor %}
@@ -476,6 +482,7 @@
 			if (type == "BU"){
 
 				element1.value = document.getElementById(id).value;	
+				console.log(element1.value)
 			}
 			else if (type == "BL"){
 
@@ -633,6 +640,20 @@
         		xhttp.send(); 
 			});
 		});
+
+		function openConversation(id){
+			// console.log('id = '+ id);
+			var form = document.createElement("form");
+			var element = document.createElement("input");
+			form.method = "POST";
+			form.action = "/open_conversation/";
+			element.value = id;
+			element.name = "point_id";
+			form.appendChild(element);
+			document.body.appendChild(form);
+			form.submit();
+			return false;
+		}
 
 	</script>
 {% endblock javascript %}

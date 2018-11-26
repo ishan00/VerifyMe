@@ -102,6 +102,7 @@ class Request(models.Model):
 	receiver = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_request_receiver')
 
 	point = models.ForeignKey('Point', on_delete = models.CASCADE)
+	status = models.BooleanField(editable = True, default = True)
 
 	timestamp = models.DateTimeField(auto_now_add = True, null = True)
 

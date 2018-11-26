@@ -85,6 +85,7 @@
 			         <th width=20%>File</th>
 			      </tr>
 			      {% for request in request_list  %}
+			      {% if request.status %}
 			      <tr onclick='return clicked();'>
 			         <!-- <td><img src="http://lorempixel.com/100/100/people/1" alt="" /></td> -->
 			         <td width=15%>{{request.sender}}</td>
@@ -109,7 +110,7 @@
 	        			<li><a href='#'  onClick = "return deleteResume({{resume.id}});">Delete</a></li>
 	   			  	 </ul>
 			      </tr>
-			      
+			      {% endif %}
 			      {% endfor %}
 			   </table>
 			{% else %}
