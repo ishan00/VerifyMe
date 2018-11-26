@@ -25,4 +25,5 @@ urlpatterns = [
 	path('delete_file/', views.delete_file, name = 'delete_file'),
 	path('mark_as_read/', views.mark_as_read, name = 'mark_as_read'),
 	path('redirect_request/', views.redirect_request_view, name = 'redirect_request_view'),
+	path('reorder_section/', views.reorder_section_view, name = 'reorder_section_view'),
 ]

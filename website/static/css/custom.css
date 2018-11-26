@@ -457,3 +457,9 @@ table {
       overflow: visible;
    }
 }*/
+
+
+.block-title-width {
+    width: 300px !important;
+    margin-bottom: 10px;
+}
