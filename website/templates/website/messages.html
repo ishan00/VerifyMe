@@ -13,34 +13,37 @@
     <div class="inbox_msg">
       <div class="inbox_people">
         <div class="headind_srch">
-          <div class="srch_bar">
+          <!-- <div class="srch_bar"> -->
+
+            <form autocomplete="off" method = "POST" action="/create_conversation/">
             <div class="input-group mb-3">
-             <input type="text" class="form-control" placeholder="Search Conversation">
+             <input type="text" class="form-control" id="myInput" name = 'roll_number' placeholder="Search Conversation">
              <span class="input-group-btn">
-                  <button class="btn btn-primary" type="button"><i class="fa fa-search" aria-hidden="true"></i></button>
+                  <button class="btn btn-primary" type="button submit"><i class="fa fa-search" aria-hidden="true"></i></button>
              </span>
             </div>
-          </div>
+            </form>
+          <!-- </div> -->
         </div>
         <div class="inbox_chat">
 
           {% for conversation in conversations %}
-            {% if forloop.first %}
+            {% if conversation.c.id == messages.0.conversation.id %}
               <div class="chat_list active_chat">
             {% else %}
-              <div class="chat_list">
+              <div class="chat_list" onClick='changeConversation({{conversation.c.id}});' style='cursor: pointer;'>
             {% endif %}
                 <div class="chat_people">
                   <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
                   <div class="chat_ib">
                     <h5>
-                    {% if conversation.user1 == user %}
-                      {{conversation.user2.name}}  
+                    {% if conversation.c.user1 == user %}
+                      {{conversation.c.user2.name}}  
                     {% else %}
-                      {{conversation.user1.name}}
+                      {{conversation.c.user1.name}}
                     {% endif %}
-                    <span class="chat_date">Dec 25</span></h5>  
-                    <p>Test, which is a new approach to have all solutions astrology under one roof.</p>
+                    <span class="chat_date">{{conversation.c.timestamp}}</span></h5>  
+                    <p>{{conversation.message.content}}</p>
                   </div>
                 </div>
               </div>
@@ -74,14 +77,16 @@
 
         </div>
         <hr>
+            <form action='/send_message/' method="POST">
         <div class="type_msg">
           <div class="input-group mb-3">
-             <input type="text" class="form-control" placeholder="Type a message">
+             <input type="text" class="form-control" id="newMessage" placeholder="Type a message">
              <span class="input-group-btn">
-                  <button class="btn btn-primary" type="button"><i class="fas fa-angle-right"></i></button>
+                  <button class="btn btn-primary" onClick="return sendNewMessage();"><i class="fas fa-angle-right"></i></button>
              </span>
             </div>
         </div>
+      </form>
       </div>
     </div>
   </div>
@@ -90,9 +95,160 @@
 
 {% endblock content %}
 
-
 {% block javascript %}
+<script>
+function autocomplete(inp, arr) {
+  /*the autocomplete function takes two arguments,
+  the text field element and an array of possible autocompleted values:*/
+  var currentFocus;
+  /*execute a function when someone writes in the text field:*/
+  inp.addEventListener("input", function(e) {
+      var a, b, i, val = this.value;
+      /*close any already open lists of autocompleted values*/
+      closeAllLists();
+      if (!val) { return false;}
+      currentFocus = -1;
+      var xhttp = new XMLHttpRequest();
+    
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+         var data = JSON.parse(this.responseText);
+         arr = data.user_list;
+         console.log(users);
+         // autocomplete(document.getElementById("myInput"), users);
+         
+          /*create a DIV element that will contain the items (values):*/
+          a = document.createElement("DIV");
+          a.setAttribute("id", document.getElementById('myInput').id + "autocomplete-list");
+          a.setAttribute("class", "autocomplete-items");
+          a.setAttribute("style", "max-height : 100px;overflow-y: scroll; padding-left:20px; padding-top : 10px; cursor:pointer;")
+          /*append the DIV element as a child of the autocomplete container:*/
+          document.getElementById('myInput').parentNode.parentNode.appendChild(a);
+          // /*for each item in the array...*/
+          for (i = 0; i < arr.length; i++) {
+            /*check if the item starts with the same letters as the text field value:*/
+            // if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+              /*create a DIV element for each matching element:*/
+              b = document.createElement("DIV");
+              /*make the matching letters bold:*/
+              b.innerHTML = "<strong>" + arr[i].key.substr(0, val.length) + "</strong>";
+              b.innerHTML += arr[i].key.substr(val.length);
+              /*insert a input field that will hold the current array item's value:*/
+              b.innerHTML += "<input type='hidden' value='" + arr[i].value + "'>";
+              /*execute a function when someone clicks on the item value (DIV element):*/
+              b.addEventListener("click", function(e) {
+                  /*insert the value for the autocomplete text field:*/
+                  inp.value = this.getElementsByTagName("input")[0].value;
+                  /*close the list of autocompleted values,
+                  (or any other open lists of autocompleted values:*/
+                  closeAllLists();
+              });
+              a.appendChild(b);
+            // }
+          }
+       }
+      }
+      xhttp.open("GET", "/change_list/?text="+document.getElementById('myInput').value , true);
+      xhttp.send();
+      
+  });
+  /*execute a function presses a key on the keyboard:*/
+  inp.addEventListener("keydown", function(e) {
+      var x = document.getElementById(this.id + "autocomplete-list");
+      if (x) x = x.getElementsByTagName("div");
+      if (e.keyCode == 40) {
+        console.log(currentFocus)
+        /*If the arrow DOWN key is pressed,
+        increase the currentFocus variable:*/
+        currentFocus++;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 38) { //up
+        /*If the arrow UP key is pressed,
+        decrease the currentFocus variable:*/
+        currentFocus--;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      // }
+      } else if (e.keyCode == 13) {
+        // If the ENTER key is pressed, prevent the form from being submitted,
+        // e.preventDefault();
+        if (currentFocus > -1) {
+          // and simulate a click on the "active" item:
+          if (x) x[currentFocus].click();
+        }
+      }
+  });
+  function addActive(x) {
+    /*a function to classify an item as "active":*/
+    if (!x) return false;
+    /*start by removing the "active" class on all items:*/
+    removeActive(x);
+    if (currentFocus >= x.length) currentFocus = 0;
+    if (currentFocus < 0) currentFocus = (x.length - 1);
+    /*add class "autocomplete-active":*/
+    x[currentFocus].classList.add("autocomplete-active");
+  }
+  function removeActive(x) {
+    /*a function to remove the "active" class from all autocomplete items:*/
+    for (var i = 0; i < x.length; i++) {
+      x[i].classList.remove("autocomplete-active");
+    }
+  }
+  function closeAllLists(elmnt) {
+    /*close all autocomplete lists in the document,
+    except the one passed as an argument:*/
+    var x = document.getElementsByClassName("autocomplete-items");
+    for (var i = 0; i < x.length; i++) {
+      if (elmnt != x[i] && elmnt != inp) {
+        x[i].parentNode.removeChild(x[i]);
+      }
+    }
+  }
+  /*execute a function when someone clicks in the document:*/
+  document.addEventListener("click", function (e) {
+      closeAllLists(e.target);
+  });
+}
 
+/*An array containing all the country names in the world:*/
+/*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
+  var users=[];     
+  autocomplete(document.getElementById("myInput"), users);
+
+
+
+  var objDiv = document.getElementsByClassName("msg_history")[0];
+  objDiv.scrollTop = objDiv.scrollHeight;
+  // window.scrollTop =  document.body.scrollHeight;
+  $('html, body').animate({scrollTop: document.body.scrollHeight-780}, "very fast");
+  function sendNewMessage(){
+    console.log('Sending Messages')
+    var form = document.createElement("form");
+    var element = document.createElement("input");
+    form.method = "POST";
+    form.action = "/send_message/";
+    element.value = document.getElementById('newMessage').value;
+    element.name = "message";
+    form.appendChild(element);
+    document.body.appendChild(form);
+    form.submit();
+    return false;
+  }
+  function changeConversation(id){
+    var form = document.createElement("form");
+    var element = document.createElement("input");
+    form.method = "POST";
+    form.action = "/change_conversation/";
+    element.value = id;
+    element.name = "conversation_id";
+    form.appendChild(element);
+    document.body.appendChild(form);
+    form.submit();
+    return false;
+  }
+
+</script>
 
 {% endblock javascript %}
 

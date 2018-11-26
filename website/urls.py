@@ -8,6 +8,7 @@ urlpatterns = [
 	re_path(r'^media/(?P<path>.*)$', views.protected_serve, {'document_root': settings.MEDIA_ROOT}),
 	path('', views.login_view, name = 'login_view'),
 	path('home/',views.home_view, name = 'home_view'),
+	path('profile/',views.profile_view, name = 'profile_view'),
 	path('resume/', views.view_resume, name = 'view_resume'),
 	path('messages/', views.view_messages, name = 'view_messages'),
 	path('logout/', views.logout_view, name = 'logout_view'),
@@ -26,4 +27,8 @@ urlpatterns = [
 	path('mark_as_read/', views.mark_as_read, name = 'mark_as_read'),
 	path('redirect_request/', views.redirect_request_view, name = 'redirect_request_view'),
 	path('reorder_section/', views.reorder_section_view, name = 'reorder_section_view'),
+	path('send_message/', views.send_message, name = 'send_message'),
+	path('change_conversation/', views.change_conversation, name = 'change_conversation'),
+	path('change_list/', views.change_list, name = 'change_list'),
+	path('create_conversation/', views.create_conversation, name = 'create_conversation')
 ]

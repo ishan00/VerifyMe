@@ -1,0 +1,49 @@
+{% extends "website/base.html" %}
+
+{% block navbar_items %}
+	{% include "website/navbar.html" %}
+{% endblock navbar_items %}
+
+
+{% block content %}
+
+
+<section>
+	<div class="container clearfix">
+		<div class="content">
+			<h1 align="center" class="site-title">{{ user.name }}</h1>
+			{% if user.privilege %}
+				<h3 align="center" class="site-subtitle">({{ user.position }})</h3>
+			{% endif %}
+			<br>
+			<h3
+		</div>
+		<div class="row">
+			<div class="col-sm-4">
+				<img src="https://ptetutorials.com/images/user-profile.png" alt="sunil">			
+			</div>
+			<div class="col-sm-4">
+				<form name="_login_form_" onsubmit="return login_form()" method="post">{% csrf_token %}
+					<p id = "_login_">{{ login_status }}</p>
+					<div class="form-group">
+						<input type="text" value="{{ user.name }}" class="form-control" name="name" placeholder="Name">
+					</div>
+					<div class="form-group">
+						<input type="text" value="{{ user.roll_number }}" class="form-control" name="roll_number" readonly>
+					</div>
+					<div class="form-group">
+						<input type="text" value="{{ user.department }}" class="form-control" name="department" placeholder="Department">
+					</div>
+					<div class="form-group">
+						<input type="text" value="{{ user.position }}" class="form-control" name="position" readonly>
+					</div>
+					<p class="text-center">
+						<button type="submit" class="btn btn-primary">Save Changes</button>
+					</p>
+				</form>
+			</div>	
+		</div>
+	</div>
+</section>
+
+{% endblock content %}
