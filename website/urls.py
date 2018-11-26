@@ -25,4 +25,8 @@ urlpatterns = [
 	path('delete_file/', views.delete_file, name = 'delete_file'),
 	path('mark_as_read/', views.mark_as_read, name = 'mark_as_read'),
 	path('redirect_request/', views.redirect_request_view, name = 'redirect_request_view'),
+	path('send_message/', views.send_message, name = 'send_message'),
+	path('change_conversation/', views.change_conversation, name = 'change_conversation'),
+	path('change_list/', views.change_list, name = 'change_list'),
+	path('create_conversation/', views.create_conversation, name = 'create_conversation')
 ]

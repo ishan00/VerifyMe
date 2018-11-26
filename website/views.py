@@ -11,6 +11,7 @@ from django.views.static import serve
 from django.core.files.storage import default_storage
 import os
 from pathlib import Path
+from datetime import datetime, timezone
 
 def protected_serve(request,path,document_root=None,show_indexes=False):
 	
@@ -328,7 +329,11 @@ def delete_point_view(request):
 
 		return redirect('/')
 
-
+# def sort_function(x):
+# 	if(isinstance(x['message'], dict)):
+# 		return x['c'].timestamp
+# 	else:
+# 		return x['c'].timestamp
 
 
 @csrf_exempt
@@ -341,18 +346,36 @@ def view_messages(request):
 
 		notifications = Notification.objects.filter(receiver = user)
 
-		conversations = Conversation.objects.filter(Q(user1 = user) | Q(user2 = user))
+		conversations = Conversation.objects.filter(Q(user1 = user) | Q(user2 = user)).order_by('-timestamp')
+
+		conversations_list = []
+
+		for conversation in conversations:
+			messages = Message.objects.filter(conversation=conversation).order_by('-timestamp')
+			if(len(messages)==0):
+				conversations_list.append({'c': conversation, 'message':{'content' : ''}})
+			else:
+				conversations_list.append({'c': conversation, 'message':messages[0]})
+
+		conversations_list.sort(key=lambda x: x['c'].timestamp, reverse=True)
 
 		if len(conversations) > 0:
 			
-			latest_conversation = conversations[0].id
+			if (request.session.get('conversation_id') != None):
+				latest_conversation = request.session['conversation_id']
+			else:
+				latest_conversation = conversations[0].id
+				request.session['conversation_id'] = latest_conversation
 
-			messages = Message.objects.filter(conversation_id = latest_conversation)
+			latest_conversation = Conversation.objects.get(id=latest_conversation)
+
+
+			messages = Message.objects.filter(conversation = latest_conversation)
 
 		else:
 			messages = ''
 
-		return render(request, 'website/messages.html', {'user':user, 'notifications':notifications, 'conversations':conversations, 'messages':messages})
+		return render(request, 'website/messages.html', {'user':user, 'notifications':notifications, 'conversations':conversations_list, 'messages':messages})
 
 		'''
 		if request.session.get('resume_id') != None:
@@ -374,6 +397,48 @@ def view_messages(request):
 	else:
 
 		return redirect('/')
+
+@csrf_exempt
+def send_message(request):
+
+	if request.session.get('user') != None:
+
+		logged_user_roll = request.session['user']
+		sender = Users.objects.get(roll_number = logged_user_roll)
+
+		conversation_id = request.session['conversation_id']
+		conversation = Conversation.objects.get(id=conversation_id)
+
+		content = request.POST['message']
+		Message.objects.create(conversation=conversation, sender=sender, content=content)
+
+		conversation.timestamp = datetime.now()
+		conversation.save()
+
+		return redirect('/messages')
+
+	else:
+
+		return redirect('/')
+
+@csrf_exempt
+def change_conversation(request):
+
+	if request.session.get('user') != None:
+
+		conversation_id = request.POST['conversation_id']
+		conversation = Conversation.objects.get(id=conversation_id)
+
+		request.session['conversation_id']=conversation_id
+
+
+		return redirect('/messages')
+
+	else:
+
+		return redirect('/')
+
+
 
 @csrf_exempt
 def add_request_view(request):
@@ -538,6 +603,53 @@ def mark_as_read(request):
 				notification.seen = True
 				notification.save()		
 			return JsonResponse({})
+
+
+	else:
+		return redirect('/')
+
+def change_list(request):	
+	if request.session.get('user') != None:
+
+		if request.method == "GET":
+
+			logged_user_roll = request.session['user']
+			user = Users.objects.get(roll_number = logged_user_roll)
+
+			text = request.GET['text']
+			length = len(text)
+			users = Users.objects.all()
+			users = [model_to_dict(obj) for obj in users]
+			user_list = []
+
+			for user in users:
+				if user['roll_number'][:length] == text or user['name'][:length] == text:
+					print(user)
+					user_list.append({'key': user['name'] + ' ' + user['roll_number'], 'value':user['roll_number']})
+	
+			return JsonResponse({'user_list' : user_list})
+
+
+	else:
+		return redirect('/')
+
+@csrf_exempt
+def create_conversation(request):	
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+
+			logged_user_roll = request.session['user']
+			user1 = Users.objects.get(roll_number = logged_user_roll)
+
+			roll_number = request.POST['roll_number']
+			user2 = Users.objects.get(roll_number=roll_number)
+			conversation1 = Conversation.objects.filter(user1=user1, user2=user2)
+			conversation2 = Conversation.objects.filter(user1=user2, user2=user1)
+			if(not conversation1 and not conversation2):
+				Conversation.objects.create(user1=user1, user2=user2)
+			
+			return redirect('/messages/')
 
 
 	else:
