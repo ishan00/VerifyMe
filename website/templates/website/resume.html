@@ -134,10 +134,34 @@
 					  			</div>
 				  			</li>
 			  			</ul>
+
 			  		{% elif section.type == 'BL' %}
 			  			
 			  			{% for point in section.points %}
-							{{point.content}}
+							<div class="row">
+								<div class="col-sm-4">
+									<input type="text" value="{{ point.title_1 }}" class="form-control" readonly>
+								</div>
+								<div class="col-sm-4"></div>
+								<div class="col-sm-4">
+									<div class="input-group mb-3" style="margin-bottom: 5px;">
+										<input value="{{ point.title_2 }}" type="text" class="form-control" readonly>
+										<span class="input-group-btn">
+		    								<button class="btn btn-green" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
+				  						</span>
+				  					</div>
+				  				</div>
+				  			</div>
+				  			{% for subpoint in point.subpoints %}
+				  			<div>
+		  						<div class="input-group mb-3" style="margin-bottom: 5px;">
+			  						<input type="text" class="form-control" value = "{{subpoint}}" readonly>
+			  						<span class="input-group-btn">
+			    						<button class="btn btn-green" style = "width : 40px;" type="submit" disabled><i class="fas fa-ban"></i></button>
+			  						</span>
+				  				</div>
+				  			</div>
+				  			{% endfor %}
 			  			{% endfor %}
 
 						<div class="row">
@@ -166,7 +190,14 @@
 			  		{% elif section.type == 'M2' %}
 
 			  			{% for point in section.points %}
-							{{point.content}}	
+			  				<div class="input-group mb-3" style="margin-bottom: 5px;">
+								<input type="text" value = "{{point.title_1}}" class="form-control" readonly/>
+								<span class="input-group-addon" style="width:1px;"></span>
+								<input type="text" value = "{{point.title_2}}" class="form-control" readonly/>
+								<span class="input-group-btn">
+			    					<button class="btn btn-green" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
+			  					</span>
+							</div>
 			  			{% endfor %}
 
 			  			<div class="input-group mb-3" style="margin-bottom: 5px;">
@@ -182,7 +213,16 @@
 					{% elif section.type == 'M3' %}
 
 						{% for point in section.points %}
-							{{point.content}}	
+			  				<div class="input-group mb-3" style="margin-bottom: 5px;">
+								<input type="text" value = "{{point.title_1}}" class="form-control" readonly/>
+								<span class="input-group-addon" style="width:1px;"></span>
+								<input type="text" value = "{{point.title_2}}" class="form-control" readonly/>
+								<span class="input-group-addon" style="width:1px;"></span>
+								<input type="text" value = "{{point.title_3}}" class="form-control" readonly/>
+								<span class="input-group-btn">
+			    					<button class="btn btn-green" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
+			  					</span>
+							</div>
 			  			{% endfor %}
 
 			  			<div class="input-group mb-3" style="margin-bottom: 5px;">
@@ -200,7 +240,18 @@
 					{% elif section.type == 'M4' %}
 
 						{% for point in section.points %}
-							{{point.content}}	
+							<div class="input-group mb-3" style="margin-bottom: 5px;">
+								<input type="text" value = "{{point.title_1}}" class="form-control" readonly/>
+								<span class="input-group-addon" style="width:1px;"></span>
+								<input type="text" value = "{{point.title_2}}" class="form-control" readonly/>
+								<span class="input-group-addon" style="width:1px;"></span>
+								<input type="text" value = "{{point.title_3}}" class="form-control" readonly/>
+								<span class="input-group-addon" style="width:1px;"></span>
+								<input type="text" value = "{{point.title_4}}" class="form-control" readonly/>
+								<span class="input-group-btn">
+			    					<button class="btn btn-green" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
+			  					</span>
+							</div>	
 			  			{% endfor %}
 
 			  			<div class="input-group mb-3" style="margin-bottom: 5px;">
@@ -374,8 +425,6 @@
 			}
 			i--;
 
-			console.log(i);
-
 			var x = document.getElementById(id + "-sub-" + i);
 			
 			var cln1 = x.cloneNode(true);
@@ -391,12 +440,12 @@
 			var new_id = cln1.id;
 			new_id = new_id.split("-");
 			cln1.id = new_id[0] + "-sub-" + i;
-			cln1.childNodes[0].id = new_id[0] + "-subpoint-" + i;
-			cln1.childNodes[1].id = new_id[0] + "-subspan-" + i;
+
+			cln1.childNodes[1].id = new_id[0] + "-subpoint-" + i;
+			cln1.childNodes[1].value = "";
+			cln1.childNodes[3].id = new_id[0] + "-subspan-" + i;
 
 			document.getElementById(id).appendChild(cln1);
-
-			console.log(cln1);
 		}
 
 		function add_point(id,type){
@@ -437,9 +486,8 @@
 
 				var i = 1;
 
-				while(document.getElementById(id + "-subpoint-" + i) != null){
+				while(document.getElementById(id + "-subpoint-" + i)){
 					var t = document.getElementById(id + "-subpoint-" + i).value;
-					console.log(t);
 					s += "#" + t;
 					i++;
 				}

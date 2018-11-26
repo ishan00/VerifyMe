@@ -171,8 +171,101 @@ def view_resume(request, alert = ""):
 			sections = Section.objects.filter(resume = resume)
 			section_list = [model_to_dict(obj) for obj in sections]
 			for i in range(len(sections)):
-				points = Point.objects.filter(section = sections[i]).order_by("position")
-				section_list[i]['points'] = [ model_to_dict(obj) for obj in points]
+
+				if sections[i].type == "BU":
+					points = Point.objects.filter(section = sections[i]).order_by("position")
+					section_list[i]['points'] = [ model_to_dict(obj) for obj in points]
+				
+				elif sections[i].type == "BL":
+
+					points = Point.objects.filter(section = sections[i]).order_by("position")
+					array = []
+					for single_point in points:
+						single_point = model_to_dict(single_point)
+
+						content = single_point['content']
+						content = content.split("#")
+
+						del single_point['content']
+
+						subpoints = []
+
+						single_point['title_1'] = content[0]
+						single_point['title_2'] = content[1]
+
+						for k in content[2:]:
+							subpoints.append(k)
+
+						single_point['subpoints'] = subpoints
+						array.append(single_point)
+
+					section_list[i]['points'] = array
+
+				elif sections[i].type == "M2":
+
+					points = Point.objects.filter(section = sections[i]).order_by("position")
+
+					array = []
+
+					for single_point in points:
+						single_point = model_to_dict(single_point)
+
+						content = single_point['content']
+						content = content.split("#")
+
+						del single_point['content']
+
+						single_point['title_1'] = content[0]
+						single_point['title_2'] = content[1]
+
+						array.append(single_point)
+
+					section_list[i]['points'] = array
+
+				elif sections[i].type == "M3":
+
+					points = Point.objects.filter(section = sections[i]).order_by("position")
+
+					array = []
+
+					for single_point in points:
+						single_point = model_to_dict(single_point)
+
+						content = single_point['content']
+						content = content.split("#")
+
+						del single_point['content']
+
+						single_point['title_1'] = content[0]
+						single_point['title_2'] = content[1]
+						single_point['title_3'] = content[2]
+
+						array.append(single_point)
+
+					section_list[i]['points'] = array
+				
+				elif sections[i].type == "M4":
+
+					points = Point.objects.filter(section = sections[i]).order_by("position")
+
+					array = []
+
+					for single_point in points:
+						single_point = model_to_dict(single_point)
+
+						content = single_point['content']
+						content = content.split("#")
+
+						del single_point['content']
+
+						single_point['title_1'] = content[0]
+						single_point['title_2'] = content[1]
+						single_point['title_3'] = content[2]
+						single_point['title_4'] = content[3]
+
+						array.append(single_point)
+
+					section_list[i]['points'] = array
 
 			notifications = Notification.objects.filter(receiver = user).order_by("-timestamp")
 
@@ -399,7 +492,6 @@ def view_messages(request):
 				request.session['conversation_id'] = latest_conversation
 
 			latest_conversation = Conversation.objects.get(id=latest_conversation)
-
 
 			messages = Message.objects.filter(conversation = latest_conversation)
 
