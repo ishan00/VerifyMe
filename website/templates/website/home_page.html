@@ -89,7 +89,7 @@
 			      <tr onclick='return clicked();'>
 			         <!-- <td><img src="http://lorempixel.com/100/100/people/1" alt="" /></td> -->
 			         <td width=15%>{{request.sender}}</td>
-			         <td width=65% style="text-align: left;">{{request.point_content}}</td>
+			         <td width=65% style="text-align: left;">{% autoescape off %}{{request.point_content}}{% endautoescape %}</td>
 			         <td width=20%>
 			         	<button class='btn btn-primary' style='width:100px; margin-bottom: 3px;' onClick = "openViewModal({{request.id}});">view</button>
 			         	<button class='btn btn-transparent' style='width:100px; margin-bottom: 3px;' onClick = "openRedirectModal({{request.id}});">Redirect</button><br>

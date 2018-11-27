@@ -121,7 +121,45 @@ def home_view(request):
 		request_list = []
 		for request1 in requests :
 			if request1.status:
-				request_list.append({'id' : request1.id,'sender' : request1.sender.name, 'point_content' : request1.point.content, 'point_id' : request1.point.id, 'status' : request1.status})
+
+				if request1.point.type == "BU":
+
+					temp = request1.point.content
+
+				elif request1.point.type == "BL":
+
+					temp1 = request1.point.content.split("#")
+					temp = "<span><b>" + temp1[0] + "</b></span><br><span>" + temp1[1] + "</span>"
+					temp += "<ul>"
+					for j in temp1[2:]:
+						temp += "<li>" + j + "</li>"
+					temp += "</ul>"
+
+				elif request1.point.type == "M2":
+
+					temp1 = request1.point.content.split("#")
+
+					print (temp1)
+					temp = ""
+					for i in range(0,len(temp1),2):
+						print (i)
+						temp += "<p>" + temp1[i] + " ----- " + temp1[i+1] + "</p>"
+
+				elif request1.point.type == "M2":
+
+					temp1 = request1.point.content.split("#")
+					temp = ""
+					for i in range(0,len(temp1),3):
+						temp += "<p>" + temp1[i] + " ----- " + temp1[i+1] + " ----- " + temp1[i+2] + "</p>"
+
+				elif request1.point.type == "M2":
+
+					temp1 = request1.point.content.split("#")
+					temp = ""
+					for i in range(0,len(temp1),4):
+						temp += "<p>" + temp1[i] + " ----- " + temp1[i+1] + " ----- " + temp1[i+2] + " ----- " + temp1[i+3] + "</p>"
+
+				request_list.append({'id' : request1.id,'sender' : request1.sender.name, 'point_content' : temp, 'point_id' : request1.point.id, 'status' : request1.status})
 
 		privileged_user = Users.objects.filter(privilege = True)
 
@@ -277,6 +315,11 @@ def view_resume(request, alert = ""):
 
 			notifications = Notification.objects.filter(receiver = user).order_by("-timestamp")
 
+			count = 0
+			for n in notifications:
+				if not n.seen:
+					count += 1
+
 			privileged_user = Users.objects.filter(privilege = True)
 
 			all_points = Point.objects.filter(status = 'V');
@@ -289,11 +332,11 @@ def view_resume(request, alert = ""):
 							x['list'].append({'content' : point.content, 'id' : point.id})
 
 			print(verified_points)			
-			return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications, 'privileged_user' : privileged_user, 'alert' : alert, 'verified_points' : verified_points})
+			return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications, 'notification_count':count, 'privileged_user' : privileged_user, 'alert' : alert, 'verified_points' : verified_points})
 
 		elif request.session.get('resume_id') != None:
 
-			request.session['resume_id'] = resume_id
+			resume_id = request.session['resume_id']
 
 			if Resume.objects.filter(id = resume_id, user = user).count != 0:
 
@@ -398,6 +441,13 @@ def view_resume(request, alert = ""):
 
 						section_list[i]['points'] = array
 
+				notifications = Notification.objects.filter(receiver = user).order_by("-timestamp")
+
+				count = 0
+				for n in notifications:
+					if not n.seen:
+						count += 1
+
 				privileged_user = Users.objects.filter(privilege = True)
 				all_points = Point.objects.filter(status = 'V');
 
@@ -411,7 +461,7 @@ def view_resume(request, alert = ""):
 				print(verified_points)
 
 				
-				return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications, 'privileged_user' : privileged_user, 'alert' : alert, 'verified_points' : verified_points})
+				return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications, 'notification_count':count, 'privileged_user' : privileged_user, 'alert' : alert, 'verified_points' : verified_points})
 		else:
 
 			return redirect('/home')
@@ -617,7 +667,12 @@ def view_messages(request):
 		logged_user_roll = request.session['user']
 		user = Users.objects.get(roll_number = logged_user_roll)
 
-		notifications = Notification.objects.filter(receiver = user)
+		notifications = Notification.objects.filter(receiver = user).order_by("-timestamp")
+
+		count = 0
+		for n in notifications:
+			if not n.seen:
+				count += 1
 
 		conversations = Conversation.objects.filter(Q(user1 = user) | Q(user2 = user)).order_by('-timestamp')
 
@@ -649,7 +704,7 @@ def view_messages(request):
 
 		print
 
-		return render(request, 'website/messages.html', {'user':user, 'notifications':notifications, 'conversations':conversations_list, 'messages':messages, 'active_conversation':latest_conversation.id})
+		return render(request, 'website/messages.html', {'user':user, 'notifications':notifications, 'notification_count':count, 'conversations':conversations_list, 'messages':messages, 'active_conversation':latest_conversation.id})
 
 		'''
 		if request.session.get('resume_id') != None:
@@ -984,6 +1039,8 @@ def open_conversation(request):
 			conversation2 = Conversation.objects.filter(user1=user2, user2=user1)
 			if(len(conversation1)==0 and len(conversation2)==0):
 				Conversation.objects.create(user1=user1, user2=user2)
+				new_conversation = Conversation.objects.filter(user1=user1, user2=user2)
+				request.session['conversation_id']=new_conversation.id
 			elif(len(conversation1)>0):
 				conversation1 = Conversation.objects.get(user1=user1, user2=user2)
 				request.session['conversation_id']=conversation1.id

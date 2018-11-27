@@ -267,16 +267,57 @@
 			  		{% elif section.type == 'M2' %}
 			  			<ul id = {{section.id}} class="handles list">
 			  			{% for point in section.points %}
-			  				<li id = {{point.id}}>
-				  				<div class="input-group mb-3" style="margin-bottom: 5px;">
-									<input type="text" value = "{{point.title_1}}" class="form-control" readonly/>
-									<span class="input-group-addon" style="width:1px;"></span>
-									<input type="text" value = "{{point.title_2}}" class="form-control" readonly/>
-									<span class="input-group-btn">
-				    					<button class="btn btn-green" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
-				  					</span>
-								</div>
-							</li>
+			  				{% if point.status == 'V' %}
+			  					<li id = {{point.id}}>
+					  				<div class="input-group mb-3" style="margin-bottom: 5px;">
+										<input type="text" value = "{{point.title_1}}" class="form-control" readonly style="background-color: #429244; color: #fff;"/>
+										<span class="input-group-addon" style="width:1px;"></span>
+										<input type="text" value = "{{point.title_2}}" class="form-control" readonly style="background-color: #429244; color: #fff;"/>
+										<span class="input-group-btn">
+			    								<button class="btn btn-green dropdown-toggle" style = "width : 40px;" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+						    					<ul class="dropdown-menu dropdown-menu-right">
+						        					<li><a href='#'  onClick = "return openUploadModal({{point.id}});">Proofs</a></li>
+						        					<li><a href='#'  onClick = "return openConversation({{point.id}});">Message</a></li>
+						        					<li><a href='#'  onClick = "return deletePoint({{point.id}});">Delete</a></li>
+						   						</ul>
+					  						</span>
+									</div>
+								</li>
+			  				{% elif point.status == 'R' %}
+			  					<li id = {{point.id}}>
+					  				<div class="input-group mb-3" style="margin-bottom: 5px;">
+										<input type="text" value = "{{point.title_1}}" class="form-control" readonly style="background-color: #ff3f3f; color: #fff;"/>
+										<span class="input-group-addon" style="width:1px;"></span>
+										<input type="text" value = "{{point.title_2}}" class="form-control" readonly style="background-color: #ff3f3f; color: #fff;"/>
+										<span class="input-group-btn">
+		    								<button class="btn btn-red dropdown-toggle" style = "width : 40px;" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+					    					<ul class="dropdown-menu dropdown-menu-right">
+					        					<li><a href = '#' onClick = "return openSendModal({{point.id}});">Resend</a></li>
+					        					<li><a href='#'  onClick = "return openUploadModal({{point.id}});">Proofs</a></li>
+					        					<li><a href='#'  onClick = "return openConversation({{point.id}});">Message</a></li>
+					        					<li><a href = '#' onClick = "return openCommentModal('{{point.comment}}');">Comment</a></li>
+					        					<li><a href='#'  onClick = "return deletePoint({{point.id}});">Delete</a></li>
+					   						</ul>
+				  						</span>
+									</div>
+								</li>
+			  				{% else %}
+				  				<li id = {{point.id}}>
+					  				<div class="input-group mb-3" style="margin-bottom: 5px;">
+										<input type="text" value = "{{point.title_1}}" class="form-control" readonly/>
+										<span class="input-group-addon" style="width:1px;"></span>
+										<input type="text" value = "{{point.title_2}}" class="form-control" readonly/>
+										<span class="input-group-btn">
+											<button class="btn btn-primary dropdown-toggle" style = "width : 40px;" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+					    					<ul class="dropdown-menu dropdown-menu-right">
+					        					<li><a href = '#' onClick = "return openSendModal({{point.id}});">Send</a></li>
+					        					<li><a href='#'  onClick = "return openUploadModal({{point.id}});">Proofs</a></li>
+					        					<li><a href='#'  onClick = "return deletePoint({{point.id}});">Delete</a></li>
+					   						</ul>
+				  						</span>
+									</div>
+								</li>
+							{% endif %}
 			  			{% endfor %}
 			  			<li class="disabled">
 			  			<div class="input-group mb-3" style="margin-bottom: 5px;">
@@ -302,7 +343,7 @@
 								<span class="input-group-addon" style="width:1px;"></span>
 								<input type="text" value = "{{point.title_3}}" class="form-control" readonly/>
 								<span class="input-group-btn">
-			    					<button class="btn btn-green" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
+			    					<button class="btn btn-primary" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
 			  					</span>
 							</div>
 							</li>
@@ -335,7 +376,7 @@
 								<span class="input-group-addon" style="width:1px;"></span>
 								<input type="text" value = "{{point.title_4}}" class="form-control" readonly/>
 								<span class="input-group-btn">
-			    					<button class="btn btn-green" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
+			    					<button class="btn btn-primary" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
 			  					</span>
 							</div>
 							</li>
