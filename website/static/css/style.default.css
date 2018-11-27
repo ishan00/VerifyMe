@@ -2032,3 +2032,58 @@ a.list-group-item.active > .badge,
 .nav-pills > li > a > .badge {
   margin-left: 3px;
 }
+
+.user_profile_container:hover .user_profile_overlay{
+  opacity: 1; 
+}
+
+#user_profile_photo{
+  width: 300px;
+  height: 300px;
+  border-radius: 150px;
+  overflow: hidden;
+}
+
+.user_profile_overlay {
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  transition: .3s ease;
+}
+
+.user_profile_icon {
+  color: white;
+  font-size: 50px;
+  position: absolute;
+  top: 58%;
+  left: 51%;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+/*.tooltip1 {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+    background-color: #ffffff;
+}
+*/
+.tooltip1 .tooltiptext1 {
+    visibility: hidden;
+    width: 120px;
+    height: 120px;
+    background-color: red;
+    color: #000;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+}
+
+.tooltip1:hover .tooltiptext1 {
+    visibility: visible;
+}

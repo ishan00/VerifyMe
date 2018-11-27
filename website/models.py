@@ -49,9 +49,9 @@ class Users(models.Model):
 	name = models.CharField(max_length = 50)
 	department = models.CharField(max_length = 2, choices = LIST_OF_DEPARTMENTS)
 	#year = models.CharField(max_length = 2,choices = LIST_OF_YEARS)
-
+	image = models.CharField(max_length = 100, default = 'profiles/default/default.png')
 	privilege = models.BooleanField(default = False)
-	position = models.CharField(max_length = 100, default = '')
+	position = models.CharField(max_length = 100, null = True)
 
 	def __str__(self):
 		return str(self.id)
@@ -102,6 +102,7 @@ class Request(models.Model):
 	receiver = models.ForeignKey('Users', on_delete = models.CASCADE, related_name = 'user_request_receiver')
 
 	point = models.ForeignKey('Point', on_delete = models.CASCADE)
+	status = models.BooleanField(editable = True, default = True)
 
 	timestamp = models.DateTimeField(auto_now_add = True, null = True)
 

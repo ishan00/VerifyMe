@@ -19,6 +19,8 @@ def protected_serve(request,path,document_root=None,show_indexes=False):
 		logged_user_roll = request.session['user']
 		user = Users.objects.get(roll_number = logged_user_roll)
 		point_id = path.split('/')[0].strip()
+		if(point_id == 'profiles'):
+			return serve(request, path, document_root, show_indexes)
 		point = Point.objects.get(id=point_id)
 		if point.section.resume.user != user:
 			requests = Request.objects.filter(receiver=user)
@@ -118,7 +120,8 @@ def home_view(request):
 		
 		request_list = []
 		for request1 in requests :
-			request_list.append({'id' : request1.id,'sender' : request1.sender.name, 'point_content' : request1.point.content, 'point_id' : request1.point.id})
+			if request1.status:
+				request_list.append({'id' : request1.id,'sender' : request1.sender.name, 'point_content' : request1.point.content, 'point_id' : request1.point.id, 'status' : request1.status})
 
 		privileged_user = Users.objects.filter(privilege = True)
 
@@ -131,7 +134,7 @@ def home_view(request):
 		return redirect('/')
 
 
-def profile_view(request):
+def profile_view(request, alert=""):
 
 	if request.session.get('user') != None:
 
@@ -148,7 +151,7 @@ def profile_view(request):
 
 		privileged_user = Users.objects.filter(privilege = True)
 
-		return render(request, 'website/profile.html', {'user':user, 'notifications':notifications, 'notification_count':count, 'privileged_user':privileged_user})
+		return render(request, 'website/profile.html', {'user':user, 'notifications':notifications, 'notification_count':count, 'privileged_user':privileged_user, 'alert' : alert})
 
 	else:
 
@@ -586,7 +589,9 @@ def view_messages(request):
 		else:
 			messages = ''
 
-		return render(request, 'website/messages.html', {'user':user, 'notifications':notifications, 'conversations':conversations_list, 'messages':messages})
+		print
+
+		return render(request, 'website/messages.html', {'user':user, 'notifications':notifications, 'conversations':conversations_list, 'messages':messages, 'active_conversation':latest_conversation.id})
 
 		'''
 		if request.session.get('resume_id') != None:
@@ -668,7 +673,14 @@ def add_request_view(request):
 			point_id = request.POST['sendModalID']
 			point = Point.objects.get(id = point_id)
 
-			Request.objects.create(sender = sender, receiver = receiver,  point = point)
+			request1 = Request.objects.filter(sender=sender, point=point)
+			if(len(request1)>0):
+				request1 = Request.objects.get(sender=sender, point=point)
+				request1.receiver = receiver
+				request1.status = True
+				request1.save()
+			else:
+				Request.objects.create(sender = sender, receiver = receiver,  point = point)
 			Notification.objects.create(sender=sender, receiver=receiver, n_type=2, point=point, seen=False)
 			
 			return redirect('/resume')
@@ -731,7 +743,8 @@ def request_action_view(request):
 				Notification.objects.create(sender=sender, receiver=point.section.resume.user, n_type=1, point=point, seen=False)
 
 			point.save()
-			request1.delete()
+			request1.status = False
+			request1.save()
 
 			return redirect('/')
 
@@ -855,14 +868,14 @@ def change_list(request):
 			logged_user_roll = request.session['user']
 			user = Users.objects.get(roll_number = logged_user_roll)
 
-			text = request.GET['text']
+			text = request.GET['text'].lower()
 			length = len(text)
 			users = Users.objects.all()
 			users = [model_to_dict(obj) for obj in users]
 			user_list = []
 
 			for user in users:
-				if user['roll_number'][:length] == text or user['name'][:length] == text:
+				if user['roll_number'].lower()[:length] == text or user['name'].lower()[:length] == text:
 					print(user)
 					user_list.append({'key': user['name'] + ' ' + user['roll_number'], 'value':user['roll_number']})
 	
@@ -889,6 +902,129 @@ def create_conversation(request):
 				Conversation.objects.create(user1=user1, user2=user2)
 			
 			return redirect('/messages/')
+
+
+	else:
+		return redirect('/')
+
+@csrf_exempt
+def open_conversation(request):	
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+
+			logged_user_roll = request.session['user']
+			user1 = Users.objects.get(roll_number = logged_user_roll)
+
+			point_id = request.POST['point_id']
+			point = Point.objects.get(id=point_id)
+			request1 = Request.objects.get(sender=user1,point=point)
+			user2 = request1.receiver
+
+			# user2 = Users.objects.get(roll_number=roll_number)
+			conversation1 = Conversation.objects.filter(user1=user1, user2=user2)
+			conversation2 = Conversation.objects.filter(user1=user2, user2=user1)
+			if(len(conversation1)==0 and len(conversation2)==0):
+				Conversation.objects.create(user1=user1, user2=user2)
+			elif(len(conversation1)>0):
+				conversation1 = Conversation.objects.get(user1=user1, user2=user2)
+				request.session['conversation_id']=conversation1.id
+			elif(len(conversation2)>0):
+				conversation2 = Conversation.objects.get(user1=user2, user2=user1)
+				request.session['conversation_id']=conversation2.id 
+			
+			return redirect('/messages/')
+
+
+	else:
+		return redirect('/')
+
+@csrf_exempt
+def reset_password(request):
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+			logged_user_roll = request.session['user']
+
+			curr_pass = request.POST['curr_pass']
+			new_pass = request.POST['new_pass']
+
+			password = Passwords.objects.get(roll_number = logged_user_roll)
+			if (password.password == curr_pass):
+				password.password = new_pass;
+				password.save();
+				return profile_view(request, "Successfully updated password")
+			else:
+				return profile_view(request, "Could not change password")
+
+	else:
+		return redirect('/')
+
+def update_profile(request):
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+			logged_user_roll = request.session['user']
+			user = Users.objects.get(roll_number = logged_user_roll)
+
+			name = request.POST['name']
+			department = request.POST['department']
+
+			user.name = name;
+			user.department = department;
+			user.save();
+			return profile_view(request, "Successfully updated details"); 
+
+	else:
+		return redirect('/')
+
+@csrf_exempt
+def upload_profile_image(request):
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+			logged_user_roll = request.session['user']
+			user = Users.objects.get(roll_number = logged_user_roll)
+			files = request.FILES.getlist('file')
+			for file in files:
+				path = Path("media/profiles/"+logged_user_roll);
+				if(path.is_dir()):
+					for old_file in os.listdir("media/profiles/" + logged_user_roll):
+						os.remove("media/profiles/"+logged_user_roll+ '/' +old_file)
+				file_name = default_storage.save( 'profiles/'+ logged_user_roll + '/' + file.name, file)
+				user.image = file_name;
+				user.save();
+			return redirect('/profile/')
+
+	else:
+		return redirect('/')
+
+@csrf_exempt
+def transfer_privilege(request):	
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+
+			logged_user_roll = request.session['user']
+			input_pass = request.POST['pass']
+			user1 = Users.objects.get(roll_number = logged_user_roll)
+			password = Passwords.objects.get(roll_number = logged_user_roll)
+
+			transfer_to = request.POST['transfer_to']
+			user2 = Users.objects.get(roll_number=transfer_to)
+			
+			if password.password != input_pass:
+				return profile_view(request, "Incorrect password")
+			if user2.privilege:
+				return profile_view(request, "User already has a privilege")
+			else:
+				user2.privilege = True;
+				user2.position = user1.position;
+				user1.position = "-";
+				user1.privilege = False;
+				user1.save();
+				user2.save();
+				return profile_view(request, "Privilege successfully transferred")
 
 
 	else:
