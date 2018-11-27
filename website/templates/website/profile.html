@@ -150,6 +150,7 @@
 	function clickInput(){
 					// console.log('id = '+ id);
 			var form = document.createElement("form");
+			form.setAttribute("style", "display:none;");
 			var element = document.createElement("input");
 			form.method = "POST";
 			form.action = "/upload_profile_image/";

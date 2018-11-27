@@ -325,6 +325,9 @@
 		console.log('id = '+ id);
 		var form = document.createElement("form");
 		var element = document.createElement("input");
+		var att = document.createAttribute("type");
+		att.value = "hidden";
+		element.setAttributeNode(att);
 		form.method = "POST";
 		form.action = "/delete_resume/";
 		element.value = id;

@@ -274,31 +274,147 @@ def view_resume(request, alert = ""):
 
 			privileged_user = Users.objects.filter(privilege = True)
 
+			all_points = Point.objects.filter(status = 'V');
+
+			verified_points = [{'type':'BU', 'list':[]}, {'type':'BL', 'list':[]}, {'type':'M2', 'list':[]}, {'type':'M3', 'list':[]}, {'type':'M4', 'list':[]}]
+			for point in all_points:
+				if(point.section.resume.user == user):
+					for x in verified_points:
+						if(x['type'] == point.section.type):
+							x['list'].append({'content' : point.content, 'id' : point.id})
+
+			print(verified_points)
 
 			
-			return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications, 'privileged_user' : privileged_user, 'alert' : alert})
+			return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications, 'privileged_user' : privileged_user, 'alert' : alert, 'verified_points' : verified_points})
 
 
 		elif request.method == "POST":
 			
 			resume_id = request.POST['id']
 
+			request.session['resume_id'] = resume_id
+
 			if Resume.objects.filter(id = resume_id, user = user).count != 0:
 
 				resume = Resume.objects.get(id = resume_id)
-				request.session['resume_id'] = resume_id
-
+			
 				sections = Section.objects.filter(resume = resume)
 				section_list = [model_to_dict(obj) for obj in sections]
 				for i in range(len(sections)):
-					points = Point.objects.filter(section = sections[i])
-					section_list[i]['points'] = [ model_to_dict(obj) for obj in points]
+
+					if sections[i].type == "BU":
+						points = Point.objects.filter(section = sections[i]).order_by("position")
+						section_list[i]['points'] = [ model_to_dict(obj) for obj in points]
+					
+					elif sections[i].type == "BL":
+
+						points = Point.objects.filter(section = sections[i]).order_by("position")
+						array = []
+						for single_point in points:
+							single_point = model_to_dict(single_point)
+
+							content = single_point['content']
+							content = content.split("#")
+
+							del single_point['content']
+
+							subpoints = []
+
+							single_point['title_1'] = content[0]
+							single_point['title_2'] = content[1]
+
+							for k in content[2:]:
+								subpoints.append(k)
+
+							single_point['subpoints'] = subpoints
+							array.append(single_point)
+
+						section_list[i]['points'] = array
+
+					elif sections[i].type == "M2":
+
+						points = Point.objects.filter(section = sections[i]).order_by("position")
+
+						array = []
+
+						for single_point in points:
+							single_point = model_to_dict(single_point)
+
+							content = single_point['content']
+							content = content.split("#")
+
+							del single_point['content']
+
+							single_point['title_1'] = content[0]
+							single_point['title_2'] = content[1]
+
+							array.append(single_point)
+
+						section_list[i]['points'] = array
+
+					elif sections[i].type == "M3":
+
+						points = Point.objects.filter(section = sections[i]).order_by("position")
+
+						array = []
+
+						for single_point in points:
+							single_point = model_to_dict(single_point)
+
+							content = single_point['content']
+							content = content.split("#")
+
+							del single_point['content']
+
+							single_point['title_1'] = content[0]
+							single_point['title_2'] = content[1]
+							single_point['title_3'] = content[2]
+
+							array.append(single_point)
+
+						section_list[i]['points'] = array
+					
+					elif sections[i].type == "M4":
+
+						points = Point.objects.filter(section = sections[i]).order_by("position")
+
+						array = []
+
+						for single_point in points:
+							single_point = model_to_dict(single_point)
+
+							content = single_point['content']
+							content = content.split("#")
+
+							del single_point['content']
+
+							single_point['title_1'] = content[0]
+							single_point['title_2'] = content[1]
+							single_point['title_3'] = content[2]
+							single_point['title_4'] = content[3]
+
+							array.append(single_point)
+
+						section_list[i]['points'] = array
+
 
 				notifications = Notification.objects.filter(receiver = user).order_by("-timestamp")
 
 				privileged_user = Users.objects.filter(privilege = True)
+				all_points = Point.objects.filter(status = 'V');
 
-				return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications, 'privileged_user' : privileged_user, 'alert' : alert})
+				verified_points = [{'type':'BU', 'list':[]}, {'type':'BL', 'list':[]}, {'type':'M2', 'list':[]}, {'type':'M3', 'list':[]}, {'type':'M4', 'list':[]}]
+				for point in all_points:
+					if(point.section.resume.user == user):
+						for x in verified_points:
+							if(x['type'] == point.section.type):
+								x['list'].append({'content' : point.content, 'id' : point.id})
+
+				print(verified_points)
+
+				
+				return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications, 'privileged_user' : privileged_user, 'alert' : alert, 'verified_points' : verified_points})
 
 		else:
 
@@ -389,6 +505,40 @@ def add_point_view(request):
 	else:
 
 		return redirect('/')
+
+@csrf_exempt
+def add_verified_point(request):
+	
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+
+			print (request.POST)
+
+			logged_user_roll = request.session['user']
+			user = Users.objects.get(roll_number = logged_user_roll)
+
+			point_id = request.POST['point_id']
+			section_id = request.POST['section_id']
+			old_point = Point.objects.get(id=point_id)
+
+			section = Section.objects.get(id=section_id)
+
+			max_position = Point.objects.filter(section = section).aggregate(Max('position')).get('position__max')
+			
+			if max_position == None:
+				max_position = 0
+
+			Point.objects.create(section=section, content=old_point.content, type=old_point.type, position=max_position+1, status=old_point.status)
+			# new_Point = Point.objects.create(section = section, content = content, type = type, position = max_position + 1)
+			
+			return redirect('/resume')
+
+	else:
+
+		return redirect('/')
+
+
 
 @csrf_exempt
 def add_section_view(request):
