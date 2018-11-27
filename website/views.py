@@ -10,8 +10,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.static import serve
 from django.core.files.storage import default_storage
 import os
+from django.core.mail import send_mail
 from pathlib import Path
 from datetime import datetime, timezone
+import reportlab
+import io
+from django.http import FileResponse
+from reportlab.pdfgen import canvas
 
 def protected_serve(request,path,document_root=None,show_indexes=False):
 	
@@ -104,6 +109,27 @@ def home_view(request):
 
 		resume_list = Resume.objects.filter(user = user).order_by("-timestamp")
 
+		for resume in resume_list:
+
+			all_verified = True
+			is_empty = True
+
+			sec = Section.objects.filter(resume = resume)
+			for s in sec:
+				pts = Point.objects.filter(section = s)
+				for single_point in pts:
+					is_empty = False
+					if single_point.status != "V":
+						all_verified = False
+
+			if not is_empty and all_verified:
+				resume.status = 2
+			else:
+				resume.status = 1
+			resume.save()
+
+		resume_list = Resume.objects.filter(user = user).order_by("-timestamp")
+
 		if request.session.get('resume_id') != None:
 			del request.session['resume_id']
 
@@ -141,6 +167,9 @@ def profile_view(request, alert=""):
 		logged_user_roll = request.session['user']
 		
 		user = Users.objects.get(roll_number = logged_user_roll)
+
+		if request.session.get('resume_id') != None:
+			del request.session['resume_id']
 
 		notifications = Notification.objects.filter(receiver = user).order_by("-timestamp")
 
@@ -557,6 +586,9 @@ def delete_point_view(request):
 def view_messages(request):
 
 	if request.session.get('user') != None:
+
+		if request.session.get('resume_id') != None:
+			del request.session['resume_id']
 
 		logged_user_roll = request.session['user']
 		user = Users.objects.get(roll_number = logged_user_roll)
@@ -1027,7 +1059,76 @@ def transfer_privilege(request):
 				user1.save();
 				user2.save();
 				return profile_view(request, "Privilege successfully transferred")
+	else:
 
+		return redirect('/')
+
+@csrf_exempt
+def final_resume(request):
+
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+
+			print (request.POST)
+
+			resume_id = request.POST['resume_id']
+			resume = Resume.objects.get(id=resume_id)
+
+			sections = Section.objects.filter(resume=resume)
+
+			html = ''
+
+			for section in sections:
+				html += '<h4>'+section.title + '</h4>\n'
+				points = Point.objects.filter(section=section)
+				if(section.type == 'BU'):
+					html += '<ul>\n'
+					for point in points:
+						html += '<li>'+ point.content +'</li>\n'
+					html += '</ul>\n'
+				elif(section.type == 'BL'):
+					for point in points:
+						content_list = point.content.split('#')
+						html += '<table width=100%><tr><td width=33%><b>'+content_list[0]+'</b></td><td width=33%></td><td width=33% align=right><b>'+content_list[1]+'</b></td></tr></table>\n'
+						html += '<ul>\n'
+						for content in content_list[2:]:
+							html += '<li>'+ content +'</li>\n'
+						html += '</ul>\n'
+				elif(section.type == 'M2'):
+					for point in points:
+						content_list = point.content.split('#')
+						html += '<table width=100% border="1|0"><tr><td width=50%>'+content_list[0]+'</td><td width=50%>'+content_list[1]+'</td></tr></table>\n'
+				elif(section.type == 'M3'):
+					for point in points:
+						content_list = point.content.split('#')
+						html += '<table width=100%><tr><td width=33%>'+content_list[0]+'</td><td width=33%>'+content_list[1]+'</td><td width=33%>'+content_list[2]+'</td></tr></table>\n'
+				elif(section.type == 'M4'):
+					for point in points:
+						content_list = point.content.split('#')
+						html += '<table width=100%><tr><td width=25%>'+content_list[0]+'</td><td width=25%>'+content_list[1]+'</td><td width=25%>'+content_list[2]+'</td><td width=25%>'+content_list[3]+'</td></tr></table>\n'
+
+			return render(request, 'website/final.html', {'html':html})
+			
+			# buffer = io.BytesIO()
+
+			# # Create the PDF object, using the buffer as its "file."
+			# p = canvas.Canvas(buffer)
+
+			# # Draw things on the PDF. Here's where the PDF generation happens.
+			# # See the ReportLab documentation for the full list of functionality.
+			# p.drawString(100, 100, "Hello world.")
+
+			# # Close the PDF object cleanly, and we're done.
+			# p.showPage()
+			# p.save()
+
+			# # FileResponse sets the Content-Disposition header so that browsers
+			# # present the option to save the file.
+			# return FileResponse(buffer, as_attachment=True, filename='hello.pdf')
+
+			# #return redirect('/home')
 
 	else:
+
 		return redirect('/')

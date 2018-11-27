@@ -1,0 +1,44 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>VerifyMe</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all,follow">
+    <!-- Bootstrap CSS-->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- Font Awesome and Pixeden Icon Stroke icon fonts-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/pe-icon-7-stroke.css' %}">
+    <!-- Google fonts - Roboto-->
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,700">
+    <link rel="stylesheet" href='https://fonts.googleapis.com/css?family=Kodchasan'>
+    <!-- lightbox-->
+    <link rel="stylesheet" href="{% static 'css/lightbox.min.css' %}">
+    <!-- theme stylesheet-->
+    <link rel="stylesheet" href="{% static 'css/style.default.css' %}" id="theme-stylesheet">
+    <!-- Custom stylesheet - for your changes-->
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <!-- Favicon-->
+    <link rel="shortcut icon" href="{% static 'favicon.png' %}">
+</head>
+<body>
+<div class="row">
+	<div class="col-sm-3">
+	</div>
+	<div class="col-sm-6">
+		{% autoescape off %}
+			{{html}}
+		{% endautoescape %}
+	</div>
+	<div class="col-sm-3">
+	</div>
+</div>
+</body>
+</html>
