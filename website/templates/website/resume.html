@@ -74,7 +74,7 @@
 				{% for section in sections %}
 					<center>
 						<div class="btn-group" style="margin-top: 10px; margin-bottom: 10px;">
-							<button class="btn btn-primary">{{section.title}}</button>
+							<button class="btn btn-primary custom-large-width">{{section.title}}</button>
 	    					<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
 	    					<ul class="dropdown-menu dropdown-menu-right">
 	        					<li><a  href='#'  onClick = "return openPointModal({{section.id}}, '{{section.type}}');">Add a verified point</a></li>
@@ -83,7 +83,7 @@
 	  					</div>
   					</center>
   					{% if section.type == 'BU' %}
-  						<ul id = {{section.id}} class="handles list">
+  						<ul class="handles list">
 			  				{% for point in section.points %}
 								<li id = {{point.id}}>
 					  				<div class="input-group mb-3" style="margin-bottom: 5px;">
@@ -142,7 +142,7 @@
 			  			</ul>
 
 			  		{% elif section.type == 'BL' %}
-			  			
+			  			{% if section.points %}
 			  			{% for point in section.points %}
 
 			  				{% if point.status == 'V' %}
@@ -240,7 +240,7 @@
 		  					{% endif %}
 
 			  			{% endfor %}
-
+			  			{% endif %}
 						<div class="row">
 							<div class="col-sm-4">
 								<input id = "{{section.id}}-title-1" type="text" class="form-control">
@@ -255,7 +255,7 @@
 			  					</div>
 			  				</div>
 			  			</div>
-			  			<div>
+			  			<div id = "{{section.id}}-div">
 	  						<div id = "{{section.id}}-sub-1" class="input-group mb-3" style="margin-bottom: 5px;">
 		  						<input id = "{{section.id}}-subpoint-1" type="text" class="form-control">
 		  						<span id = "{{section.id}}-subspan-1" class="input-group-btn">
@@ -265,18 +265,20 @@
 			  			</div>
 
 			  		{% elif section.type == 'M2' %}
-
+			  			<ul id = {{section.id}} class="handles list">
 			  			{% for point in section.points %}
-			  				<div class="input-group mb-3" style="margin-bottom: 5px;">
-								<input type="text" value = "{{point.title_1}}" class="form-control" readonly/>
-								<span class="input-group-addon" style="width:1px;"></span>
-								<input type="text" value = "{{point.title_2}}" class="form-control" readonly/>
-								<span class="input-group-btn">
-			    					<button class="btn btn-green" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
-			  					</span>
-							</div>
+			  				<li id = {{point.id}}>
+				  				<div class="input-group mb-3" style="margin-bottom: 5px;">
+									<input type="text" value = "{{point.title_1}}" class="form-control" readonly/>
+									<span class="input-group-addon" style="width:1px;"></span>
+									<input type="text" value = "{{point.title_2}}" class="form-control" readonly/>
+									<span class="input-group-btn">
+				    					<button class="btn btn-green" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
+				  					</span>
+								</div>
+							</li>
 			  			{% endfor %}
-
+			  			<li class="disabled">
 			  			<div class="input-group mb-3" style="margin-bottom: 5px;">
 							
 							<input id = "{{section.id}}-1" type="text" class="form-control"/>
@@ -286,10 +288,13 @@
 		    					<button class="btn btn-primary" style = "width : 40px;" type="submit" onclick="add_point({{section.id}},'{{section.type}}')"><i class="fas fa-arrow-right"></i></button>
 		  					</span>
 						</div>
+						</li>
+						</ul>
 
 					{% elif section.type == 'M3' %}
-
+						<ul id = {{section.id}} class="handles list">
 						{% for point in section.points %}
+							<li id = {{point.id}}>
 			  				<div class="input-group mb-3" style="margin-bottom: 5px;">
 								<input type="text" value = "{{point.title_1}}" class="form-control" readonly/>
 								<span class="input-group-addon" style="width:1px;"></span>
@@ -300,8 +305,9 @@
 			    					<button class="btn btn-green" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
 			  					</span>
 							</div>
+							</li>
 			  			{% endfor %}
-
+			  			<li class="disabled">
 			  			<div class="input-group mb-3" style="margin-bottom: 5px;">
 							
 							<input id = "{{section.id}}-1" type="text" class="form-control"/>
@@ -313,10 +319,13 @@
 		    					<button class="btn btn-primary" style = "width : 40px;" type="submit" onclick="add_point({{section.id}},'{{section.type}}')"><i class="fas fa-arrow-right"></i></button>
 		  					</span>
 						</div>
+						</li>
+						</ul>
 
 					{% elif section.type == 'M4' %}
-
+						<ul id = {{section.id}} class="handles list">
 						{% for point in section.points %}
+							<li id = {{point.id}}>
 							<div class="input-group mb-3" style="margin-bottom: 5px;">
 								<input type="text" value = "{{point.title_1}}" class="form-control" readonly/>
 								<span class="input-group-addon" style="width:1px;"></span>
@@ -328,9 +337,10 @@
 								<span class="input-group-btn">
 			    					<button class="btn btn-green" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
 			  					</span>
-							</div>	
+							</div>
+							</li>
 			  			{% endfor %}
-
+			  			<li class="disabled">
 			  			<div class="input-group mb-3" style="margin-bottom: 5px;">
 							
 							<input id = "{{section.id}}-1" type="text" class="form-control"/>
@@ -344,7 +354,8 @@
 		    					<button class="btn btn-primary" style = "width : 40px;" type="submit" onclick="add_point({{section.id}},'{{section.type}}')"><i class="fas fa-arrow-right"></i></button>
 		  					</span>
 						</div>
-
+						</li>
+						</ul>
 			  		{% endif %}
 				{% endfor %}
 				<!-- Single Point -->
@@ -683,7 +694,7 @@
 			cln1.childNodes[1].value = "";
 			cln1.childNodes[3].id = new_id[0] + "-subspan-" + i;
 
-			document.getElementById(id).appendChild(cln1);
+			document.getElementById(id + "-div").appendChild(cln1);
 		}
 
 		function add_point(id,type){
@@ -713,8 +724,8 @@
 
 			if (type == "BU"){
 
-				element1.value = document.getElementById(id).value;	
-				console.log(element1.value)
+				element1.value = document.getElementById(id).value;
+				console.log(element1.value);
 			}
 			else if (type == "BL"){
 

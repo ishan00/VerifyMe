@@ -166,11 +166,14 @@ def view_resume(request, alert = ""):
 		logged_user_roll = request.session['user']
 		user = Users.objects.get(roll_number = logged_user_roll)
 
-
-		if request.session.get('resume_id') != None:
-
-			resume = Resume.objects.get(id = request.session['resume_id'])
+		if request.method == "POST":
 			
+			resume_id = request.POST['id']
+
+			resume = Resume.objects.get(id = resume_id)
+			
+			request.session['resume_id'] = resume_id
+
 			sections = Section.objects.filter(resume = resume)
 			section_list = [model_to_dict(obj) for obj in sections]
 			for i in range(len(sections)):
@@ -178,6 +181,8 @@ def view_resume(request, alert = ""):
 				if sections[i].type == "BU":
 					points = Point.objects.filter(section = sections[i]).order_by("position")
 					section_list[i]['points'] = [ model_to_dict(obj) for obj in points]
+
+					print (section_list[i])
 				
 				elif sections[i].type == "BL":
 
@@ -283,15 +288,10 @@ def view_resume(request, alert = ""):
 						if(x['type'] == point.section.type):
 							x['list'].append({'content' : point.content, 'id' : point.id})
 
-			print(verified_points)
-
-			
+			print(verified_points)			
 			return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications, 'privileged_user' : privileged_user, 'alert' : alert, 'verified_points' : verified_points})
 
-
-		elif request.method == "POST":
-			
-			resume_id = request.POST['id']
+		elif request.session.get('resume_id') != None:
 
 			request.session['resume_id'] = resume_id
 
@@ -398,9 +398,6 @@ def view_resume(request, alert = ""):
 
 						section_list[i]['points'] = array
 
-
-				notifications = Notification.objects.filter(receiver = user).order_by("-timestamp")
-
 				privileged_user = Users.objects.filter(privilege = True)
 				all_points = Point.objects.filter(status = 'V');
 
@@ -415,7 +412,6 @@ def view_resume(request, alert = ""):
 
 				
 				return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications, 'privileged_user' : privileged_user, 'alert' : alert, 'verified_points' : verified_points})
-
 		else:
 
 			return redirect('/home')
