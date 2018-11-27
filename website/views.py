@@ -181,6 +181,8 @@ def view_resume(request, alert = ""):
 				if sections[i].type == "BU":
 					points = Point.objects.filter(section = sections[i]).order_by("position")
 					section_list[i]['points'] = [ model_to_dict(obj) for obj in points]
+
+					print (section_list[i])
 				
 				elif sections[i].type == "BL":
 

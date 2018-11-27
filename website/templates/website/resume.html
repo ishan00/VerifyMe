@@ -83,7 +83,7 @@
 	  					</div>
   					</center>
   					{% if section.type == 'BU' %}
-  						<ul id = {{section.id}} class="handles list">
+  						<ul class="handles list">
 			  				{% for point in section.points %}
 								<li id = {{point.id}}>
 					  				<div class="input-group mb-3" style="margin-bottom: 5px;">
@@ -184,7 +184,7 @@
 			  					</div>
 			  				</div>
 			  			</div>
-			  			<div id = "{{section.id}}">
+			  			<div id = "{{section.id}}-div">
 	  						<div id = "{{section.id}}-sub-1" class="input-group mb-3" style="margin-bottom: 5px;">
 		  						<input id = "{{section.id}}-subpoint-1" type="text" class="form-control">
 		  						<span id = "{{section.id}}-subspan-1" class="input-group-btn">
@@ -462,7 +462,7 @@
 			cln1.childNodes[1].value = "";
 			cln1.childNodes[3].id = new_id[0] + "-subspan-" + i;
 
-			document.getElementById(id).appendChild(cln1);
+			document.getElementById(id + "-div").appendChild(cln1);
 		}
 
 		function add_point(id,type){
@@ -492,8 +492,8 @@
 
 			if (type == "BU"){
 
-				element1.value = document.getElementById(id).value;	
-				console.log(element1.value)
+				element1.value = document.getElementById(id).value;
+				console.log(element1.value);
 			}
 			else if (type == "BL"){
 
