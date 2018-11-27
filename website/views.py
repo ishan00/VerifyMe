@@ -163,8 +163,120 @@ def view_resume(request, alert = ""):
 		logged_user_roll = request.session['user']
 		user = Users.objects.get(roll_number = logged_user_roll)
 
+		if request.method == "POST":
+			
+			resume_id = request.POST['id']
 
-		if request.session.get('resume_id') != None:
+			resume = Resume.objects.get(id = resume_id)
+			
+			request.session['resume_id'] = resume_id
+
+			sections = Section.objects.filter(resume = resume)
+			section_list = [model_to_dict(obj) for obj in sections]
+			for i in range(len(sections)):
+
+				if sections[i].type == "BU":
+					points = Point.objects.filter(section = sections[i]).order_by("position")
+					section_list[i]['points'] = [ model_to_dict(obj) for obj in points]
+				
+				elif sections[i].type == "BL":
+
+					points = Point.objects.filter(section = sections[i]).order_by("position")
+					array = []
+					for single_point in points:
+						single_point = model_to_dict(single_point)
+
+						content = single_point['content']
+						content = content.split("#")
+
+						del single_point['content']
+
+						subpoints = []
+
+						single_point['title_1'] = content[0]
+						single_point['title_2'] = content[1]
+
+						for k in content[2:]:
+							subpoints.append(k)
+
+						single_point['subpoints'] = subpoints
+						array.append(single_point)
+
+					section_list[i]['points'] = array
+
+				elif sections[i].type == "M2":
+
+					points = Point.objects.filter(section = sections[i]).order_by("position")
+
+					array = []
+
+					for single_point in points:
+						single_point = model_to_dict(single_point)
+
+						content = single_point['content']
+						content = content.split("#")
+
+						del single_point['content']
+
+						single_point['title_1'] = content[0]
+						single_point['title_2'] = content[1]
+
+						array.append(single_point)
+
+					section_list[i]['points'] = array
+
+				elif sections[i].type == "M3":
+
+					points = Point.objects.filter(section = sections[i]).order_by("position")
+
+					array = []
+
+					for single_point in points:
+						single_point = model_to_dict(single_point)
+
+						content = single_point['content']
+						content = content.split("#")
+
+						del single_point['content']
+
+						single_point['title_1'] = content[0]
+						single_point['title_2'] = content[1]
+						single_point['title_3'] = content[2]
+
+						array.append(single_point)
+
+					section_list[i]['points'] = array
+				
+				elif sections[i].type == "M4":
+
+					points = Point.objects.filter(section = sections[i]).order_by("position")
+
+					array = []
+
+					for single_point in points:
+						single_point = model_to_dict(single_point)
+
+						content = single_point['content']
+						content = content.split("#")
+
+						del single_point['content']
+
+						single_point['title_1'] = content[0]
+						single_point['title_2'] = content[1]
+						single_point['title_3'] = content[2]
+						single_point['title_4'] = content[3]
+
+						array.append(single_point)
+
+					section_list[i]['points'] = array
+
+			notifications = Notification.objects.filter(receiver = user).order_by("-timestamp")
+
+			privileged_user = Users.objects.filter(privilege = True)
+			
+			return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications, 'privileged_user' : privileged_user, 'alert' : alert})
+
+		elif request.session.get('resume_id') != None:
 
 			resume = Resume.objects.get(id = request.session['resume_id'])
 			
@@ -270,32 +382,8 @@ def view_resume(request, alert = ""):
 			notifications = Notification.objects.filter(receiver = user).order_by("-timestamp")
 
 			privileged_user = Users.objects.filter(privilege = True)
-
-
 			
 			return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications, 'privileged_user' : privileged_user, 'alert' : alert})
-
-
-		elif request.method == "POST":
-			
-			resume_id = request.POST['id']
-
-			if Resume.objects.filter(id = resume_id, user = user).count != 0:
-
-				resume = Resume.objects.get(id = resume_id)
-				request.session['resume_id'] = resume_id
-
-				sections = Section.objects.filter(resume = resume)
-				section_list = [model_to_dict(obj) for obj in sections]
-				for i in range(len(sections)):
-					points = Point.objects.filter(section = sections[i])
-					section_list[i]['points'] = [ model_to_dict(obj) for obj in points]
-
-				notifications = Notification.objects.filter(receiver = user).order_by("-timestamp")
-
-				privileged_user = Users.objects.filter(privilege = True)
-
-				return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications, 'privileged_user' : privileged_user, 'alert' : alert})
 
 		else:
 

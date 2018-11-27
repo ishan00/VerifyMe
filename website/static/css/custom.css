@@ -28,6 +28,11 @@
     margin-bottom: 10px;
 }
 
+.custom-large-width {
+    width: 240px !important;
+    margin-bottom: 10px;
+}
+
 .custom-space {
     margin-bottom: 10px !important;
 }

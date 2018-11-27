@@ -74,7 +74,7 @@
 				{% for section in sections %}
 					<center>
 						<div class="btn-group" style="margin-top: 10px; margin-bottom: 10px;">
-							<button class="btn btn-primary">{{section.title}}</button>
+							<button class="btn btn-primary custom-large-width">{{section.title}}</button>
 	    					<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
 	    					<ul class="dropdown-menu dropdown-menu-right">
 	        					<li><a>Rename</a></li>
@@ -136,7 +136,7 @@
 			  			</ul>
 
 			  		{% elif section.type == 'BL' %}
-			  			
+			  			{% if section.points %}
 			  			{% for point in section.points %}
 							<div class="row">
 								<div class="col-sm-4">
@@ -163,7 +163,7 @@
 				  			</div>
 				  			{% endfor %}
 			  			{% endfor %}
-
+			  			{% endif %}
 						<div class="row">
 							<div class="col-sm-4">
 								<input id = "{{section.id}}-title-1" type="text" class="form-control">
@@ -188,18 +188,20 @@
 			  			</div>
 
 			  		{% elif section.type == 'M2' %}
-
+			  			<ul id = {{section.id}} class="handles list">
 			  			{% for point in section.points %}
-			  				<div class="input-group mb-3" style="margin-bottom: 5px;">
-								<input type="text" value = "{{point.title_1}}" class="form-control" readonly/>
-								<span class="input-group-addon" style="width:1px;"></span>
-								<input type="text" value = "{{point.title_2}}" class="form-control" readonly/>
-								<span class="input-group-btn">
-			    					<button class="btn btn-green" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
-			  					</span>
-							</div>
+			  				<li id = {{point.id}}>
+				  				<div class="input-group mb-3" style="margin-bottom: 5px;">
+									<input type="text" value = "{{point.title_1}}" class="form-control" readonly/>
+									<span class="input-group-addon" style="width:1px;"></span>
+									<input type="text" value = "{{point.title_2}}" class="form-control" readonly/>
+									<span class="input-group-btn">
+				    					<button class="btn btn-green" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
+				  					</span>
+								</div>
+							</li>
 			  			{% endfor %}
-
+			  			<li class="disabled">
 			  			<div class="input-group mb-3" style="margin-bottom: 5px;">
 							
 							<input id = "{{section.id}}-1" type="text" class="form-control"/>
@@ -209,10 +211,13 @@
 		    					<button class="btn btn-green" style = "width : 40px;" type="submit" onclick="add_point({{section.id}},'{{section.type}}')"><i class="fas fa-arrow-right"></i></button>
 		  					</span>
 						</div>
+						</li>
+						</ul>
 
 					{% elif section.type == 'M3' %}
-
+						<ul id = {{section.id}} class="handles list">
 						{% for point in section.points %}
+							<li id = {{point.id}}>
 			  				<div class="input-group mb-3" style="margin-bottom: 5px;">
 								<input type="text" value = "{{point.title_1}}" class="form-control" readonly/>
 								<span class="input-group-addon" style="width:1px;"></span>
@@ -223,8 +228,9 @@
 			    					<button class="btn btn-green" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
 			  					</span>
 							</div>
+							</li>
 			  			{% endfor %}
-
+			  			<li class="disabled">
 			  			<div class="input-group mb-3" style="margin-bottom: 5px;">
 							
 							<input id = "{{section.id}}-1" type="text" class="form-control"/>
@@ -236,10 +242,13 @@
 		    					<button class="btn btn-green" style = "width : 40px;" type="submit" onclick="add_point({{section.id}},'{{section.type}}')"><i class="fas fa-arrow-right"></i></button>
 		  					</span>
 						</div>
+						</li>
+						</ul>
 
 					{% elif section.type == 'M4' %}
-
+						<ul id = {{section.id}} class="handles list">
 						{% for point in section.points %}
+							<li id = {{point.id}}>
 							<div class="input-group mb-3" style="margin-bottom: 5px;">
 								<input type="text" value = "{{point.title_1}}" class="form-control" readonly/>
 								<span class="input-group-addon" style="width:1px;"></span>
@@ -251,9 +260,10 @@
 								<span class="input-group-btn">
 			    					<button class="btn btn-green" style = "width : 40px;" type="submit"><i class="fas fa-ellipsis-v"></i></button>
 			  					</span>
-							</div>	
+							</div>
+							</li>
 			  			{% endfor %}
-
+			  			<li class="disabled">
 			  			<div class="input-group mb-3" style="margin-bottom: 5px;">
 							
 							<input id = "{{section.id}}-1" type="text" class="form-control"/>
@@ -267,7 +277,8 @@
 		    					<button class="btn btn-green" style = "width : 40px;" type="submit" onclick="add_point({{section.id}},'{{section.type}}')"><i class="fas fa-arrow-right"></i></button>
 		  					</span>
 						</div>
-
+						</li>
+						</ul>
 			  		{% endif %}
 				{% endfor %}
 				<!-- Single Point -->
