@@ -14,7 +14,7 @@
 		<div class = "row">
 			<div class="col-sm-1"></div>
 			<div class = "col-sm-4">
-				<h1 align="center">Log In</h1>
+				<h1 align="center" class="site-subtitle">Log In</h1>
 
 				<form name="_login_form_" onsubmit="return login_form()" method="post">{% csrf_token %}
 					<p id = "_login_">{{ login_status }}</p>
@@ -35,7 +35,7 @@
 			</div>
 			<div class="col-sm-2"></div>
 			<div class = "col-sm-4">
-				<h1 align="center">Sign Up</h1>
+				<h1 align="center" class="site-subtitle">Sign Up</h1>
 				<form name = "_registration_form_" onsubmit = "return registration_form()" method="post">{% csrf_token %}
 					<p id = "_registration_">{{ registration_status }}</p> 
 					<div class="form-group">

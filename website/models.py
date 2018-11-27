@@ -62,7 +62,7 @@ class Resume(models.Model):
 	title = models.CharField(max_length = 100, default = '')
 
 	timestamp = models.DateTimeField(auto_now_add = True, null = True)
-	status = models.IntegerField(default = 2) #1 for rejected, 2 for pending, 3 for verified
+	status = models.IntegerField(default = 1) # 1 for pending, 2 for verified
 
 	def __str__(self):
 		return str(self.id)

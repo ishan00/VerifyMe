@@ -10,8 +10,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.static import serve
 from django.core.files.storage import default_storage
 import os
+from django.core.mail import send_mail
 from pathlib import Path
 from datetime import datetime, timezone
+import reportlab
+import io
+from django.http import FileResponse
+from reportlab.pdfgen import canvas
 
 def protected_serve(request,path,document_root=None,show_indexes=False):
 	
@@ -91,6 +96,11 @@ def logout_view(request):
 
 	if request.session.get('user') != None:
 		del request.session['user']
+	if request.session.get('resume_id') != None:
+		del request.session['resume_id']
+	if request.session.get('conversation_id') != None:
+		del request.session['conversation_id']
+
 
 	return redirect('/')
 
@@ -104,8 +114,29 @@ def home_view(request):
 
 		resume_list = Resume.objects.filter(user = user).order_by("-timestamp")
 
-		if request.session.get('resume_id') != None:
-			del request.session['resume_id']
+		for resume in resume_list:
+
+			all_verified = True
+			is_empty = True
+
+			sec = Section.objects.filter(resume = resume)
+			for s in sec:
+				pts = Point.objects.filter(section = s)
+				for single_point in pts:
+					is_empty = False
+					if single_point.status != "V":
+						all_verified = False
+
+			if not is_empty and all_verified:
+				resume.status = 2
+			else:
+				resume.status = 1
+			resume.save()
+
+		resume_list = Resume.objects.filter(user = user).order_by("-timestamp")
+
+		#if request.session.get('resume_id') != None:
+		#	del request.session['resume_id']
 
 		# request_list = Request.objects.filter(receiver = user)
 
@@ -179,6 +210,9 @@ def profile_view(request, alert=""):
 		logged_user_roll = request.session['user']
 		
 		user = Users.objects.get(roll_number = logged_user_roll)
+
+		#if request.session.get('resume_id') != None:
+		#	del request.session['resume_id']
 
 		notifications = Notification.objects.filter(receiver = user).order_by("-timestamp")
 
@@ -329,7 +363,12 @@ def view_resume(request, alert = ""):
 				if(point.section.resume.user == user):
 					for x in verified_points:
 						if(x['type'] == point.section.type):
-							x['list'].append({'content' : point.content, 'id' : point.id})
+							if(x['type'] == 'BL'):
+								x['list'].append({'content' : point.content.split('#')[0], 'id' : point.id})
+							elif(x['type'] == 'M2'):
+								x['list'].append({'content' : point.content.replace('#', ' ------ '), 'id' : point.id})
+							else:
+								x['list'].append({'content' : point.content, 'id' : point.id})
 
 			print(verified_points)			
 			return render(request, 'website/resume.html', {'user':user, 'resume': resume, 'sections' : section_list, 'notifications':notifications, 'notification_count':count, 'privileged_user' : privileged_user, 'alert' : alert, 'verified_points' : verified_points})
@@ -456,7 +495,12 @@ def view_resume(request, alert = ""):
 					if(point.section.resume.user == user):
 						for x in verified_points:
 							if(x['type'] == point.section.type):
-								x['list'].append({'content' : point.content, 'id' : point.id})
+								if(x['type'] == 'BL'):
+									x['list'].append({'content' : point.content.split('#')[0], 'id' : point.id})
+								elif(x['type'] == 'M2'):
+									x['list'].append({'content' : point.content.replace('#', ' ------ '), 'id' : point.id})									
+								else:
+									x['list'].append({'content' : point.content, 'id' : point.id})
 
 				print(verified_points)
 
@@ -664,6 +708,9 @@ def view_messages(request):
 
 	if request.session.get('user') != None:
 
+		#if request.session.get('resume_id') != None:
+		#	del request.session['resume_id']
+
 		logged_user_roll = request.session['user']
 		user = Users.objects.get(roll_number = logged_user_roll)
 
@@ -699,12 +746,14 @@ def view_messages(request):
 
 			messages = Message.objects.filter(conversation = latest_conversation)
 
+			latest_conversation = latest_conversation.id
+
 		else:
 			messages = ''
+			latest_conversation = ''
 
-		print
 
-		return render(request, 'website/messages.html', {'user':user, 'notifications':notifications, 'notification_count':count, 'conversations':conversations_list, 'messages':messages, 'active_conversation':latest_conversation.id})
+		return render(request, 'website/messages.html', {'user':user, 'notifications':notifications, 'notification_count':count, 'conversations':conversations_list, 'messages':messages, 'active_conversation':latest_conversation})
 
 		'''
 		if request.session.get('resume_id') != None:
@@ -876,6 +925,7 @@ def upload(request):
 
 			for file in files:
 				file_name = default_storage.save(point_id + '/' + file.name, file)
+			request.method = "GET"
 			return view_resume(request, "Successfully uploaded")
 
 	else:
@@ -951,6 +1001,8 @@ def reorder_section_view(request):
 			logged_user_roll = request.session['user']
 			user = Users.objects.get(roll_number = logged_user_roll)			
 			
+			print (request.GET)
+
 			section_id = request.GET['section']
 			section_id = section_id[0]
 	
@@ -1011,7 +1063,7 @@ def create_conversation(request):
 			user2 = Users.objects.get(roll_number=roll_number)
 			conversation1 = Conversation.objects.filter(user1=user1, user2=user2)
 			conversation2 = Conversation.objects.filter(user1=user2, user2=user1)
-			if(not conversation1 and not conversation2):
+			if( len(conversation1)==0 and len(conversation2)==0):
 				Conversation.objects.create(user1=user1, user2=user2)
 			
 			return redirect('/messages/')
@@ -1039,7 +1091,7 @@ def open_conversation(request):
 			conversation2 = Conversation.objects.filter(user1=user2, user2=user1)
 			if(len(conversation1)==0 and len(conversation2)==0):
 				Conversation.objects.create(user1=user1, user2=user2)
-				new_conversation = Conversation.objects.filter(user1=user1, user2=user2)
+				new_conversation = Conversation.objects.get(user1=user1, user2=user2)
 				request.session['conversation_id']=new_conversation.id
 			elif(len(conversation1)>0):
 				conversation1 = Conversation.objects.get(user1=user1, user2=user2)
@@ -1140,7 +1192,121 @@ def transfer_privilege(request):
 				user1.save();
 				user2.save();
 				return profile_view(request, "Privilege successfully transferred")
+	else:
 
+		return redirect('/')
+
+@csrf_exempt
+def final_resume(request):
+
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+
+			print (request.POST)
+
+			resume_id = request.POST['resume_id']
+			resume = Resume.objects.get(id=resume_id)
+
+			sections = Section.objects.filter(resume=resume)
+
+			html = ''
+
+			for section in sections:
+				html += '<h4>'+section.title + '</h4>\n'
+				points = Point.objects.filter(section=section)
+				if(section.type == 'BU'):
+					html += '<ul>\n'
+					for point in points:
+						html += '<li>'+ point.content +'</li>\n'
+					html += '</ul>\n'
+				elif(section.type == 'BL'):
+					for point in points:
+						content_list = point.content.split('#')
+						html += '<table width=100%><tr><td width=33%><b>'+content_list[0]+'</b></td><td width=33%></td><td width=33% align=right><b>'+content_list[1]+'</b></td></tr></table>\n'
+						html += '<ul>\n'
+						for content in content_list[2:]:
+							html += '<li>'+ content +'</li>\n'
+						html += '</ul>\n'
+				elif(section.type == 'M2'):
+					for point in points:
+						content_list = point.content.split('#')
+						html += '<table width=100% border="1|0"><tr><td width=50%>'+content_list[0]+'</td><td width=50%>'+content_list[1]+'</td></tr></table>\n'
+				elif(section.type == 'M3'):
+					for point in points:
+						content_list = point.content.split('#')
+						html += '<table width=100%><tr><td width=33%>'+content_list[0]+'</td><td width=33%>'+content_list[1]+'</td><td width=33%>'+content_list[2]+'</td></tr></table>\n'
+				elif(section.type == 'M4'):
+					for point in points:
+						content_list = point.content.split('#')
+						html += '<table width=100%><tr><td width=25%>'+content_list[0]+'</td><td width=25%>'+content_list[1]+'</td><td width=25%>'+content_list[2]+'</td><td width=25%>'+content_list[3]+'</td></tr></table>\n'
+
+			return render(request, 'website/final.html', {'html':html})
+			
+			# buffer = io.BytesIO()
+
+			# # Create the PDF object, using the buffer as its "file."
+			# p = canvas.Canvas(buffer)
+
+			# # Draw things on the PDF. Here's where the PDF generation happens.
+			# # See the ReportLab documentation for the full list of functionality.
+			# p.drawString(100, 100, "Hello world.")
+
+			# # Close the PDF object cleanly, and we're done.
+			# p.showPage()
+			# p.save()
+
+			# # FileResponse sets the Content-Disposition header so that browsers
+			# # present the option to save the file.
+			# return FileResponse(buffer, as_attachment=True, filename='hello.pdf')
+
+			# #return redirect('/home')
 
 	else:
+
+		return redirect('/')
+
+@csrf_exempt
+def final_resume(request):
+
+	if request.session.get('user') != None:
+
+		if request.method == "POST":
+
+			print (request.POST)
+
+			resume_id = request.POST['resume_id']
+			resume = Resume.objects.get(id=resume_id)
+
+			sections = Section.objects.filter(resume=resume)
+
+			html = ''
+
+			for section in sections:
+				html += '<h4>'+section.title + '</h4>\n'
+				points = Point.objects.filter(section=section)
+				if(section.type == 'BU'):
+					html += '<ul>\n'
+					for point in points:
+						html += '<li>'+ point.content +'</li>\n'
+					html += '</ul>\n'
+				elif(section.type == 'BL'):
+					for point in points:
+						content_list = point.content.split('#')
+						html += '<table width=100%><tr><td width=45%><b>'+content_list[0]+'</b></td><td width=10%></td><td width=45% align=right><b>'+content_list[1]+'</b></td></tr></table>\n'
+						html += '<ul>\n'
+						for content in content_list[2:]:
+							html += '<li>'+ content +'</li>\n'
+						html += '</ul>\n'
+				elif(section.type == 'M2'):
+					html += '<table width=100% class="table-striped table-bordered">\n'
+					for point in points:
+						content_list = point.content.split('#')
+						html += '<tr><td width=50% style="padding:5px;">'+content_list[0]+'</td><td width=50% style="padding:5px;">'+content_list[1]+'</td></tr>\n'
+					html += '</table>\n'
+
+			return render(request, 'website/final.html', {'html':html})
+
+	else:
+
 		return redirect('/')

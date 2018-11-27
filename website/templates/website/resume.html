@@ -83,7 +83,7 @@
 	  					</div>
   					</center>
   					{% if section.type == 'BU' %}
-  						<ul class="handles list">
+  						<ul id = "{{section.id}}-ul" class="handles list">
 			  				{% for point in section.points %}
 								<li id = {{point.id}}>
 					  				<div class="input-group mb-3" style="margin-bottom: 5px;">
@@ -421,18 +421,18 @@
 				      <div class="modal-content">
 				        <div class="modal-header">
 				          <button type="button" class="close" data-dismiss="modal">&times;</button>
-				          <h4 class="modal-title">Add Section</h4>
+				          <h4 class="modal-title" align="center">Add Section</h4>
 				        </div>
 				        <div class="modal-body">
 				        <form method='POST' action='/add_section/'>
-				          Title: <input type=text id=section-title name='title'><br>
-				          Type: <select class="form-control" placeholder="Department" name="type">
-							<option value="">Choose a type</option>
+				         <input type=text class="form-control" id=section-title name='title' placeholder="Title"><br>
+				          <select class="form-control" placeholder="Department" name="type" align=center>
+							<option value="BU">Choose a type</option>
 							<option value="BU">Bullet</option>
 							<option value="BL">Block</option>
 							<option value="M2">Two Columns</option>
-							<option value="M3">Three Columns</option>
-							<option value="M4">Four Columns</option>
+<!-- 							<option value="M3">Three Columns</option>
+							<option value="M4">Four Columns</option> -->
 						</select>
 						<div class='modal-footer'>
 				          <input type=submit id="_create_" class="btn btn-primary">
@@ -461,11 +461,11 @@
 								      <div class="modal-content">
 								        <div class="modal-header">
 								          <button type="button" class="close" data-dismiss="modal">&times;</button>
-								          <h4 class="modal-title">Send</h4>
+								          <h4 class="modal-title" align="center">Send</h4>
 								        </div>
 								        <div class="modal-body">
 								        <form method='POST' action='/add_request/'>
-								          Choose: <select class="form-control" placeholder="Position" name="roll_number" >
+								          <select class="form-control" placeholder="Position" name="roll_number" >
 											<option value="">Position</option>
 											{% for user in privileged_user %}
 											<option value="{{user.roll_number}}">{{user.position}} ({{user.name}})</option>
@@ -490,14 +490,15 @@
 								      <div class="modal-content">
 								        <div class="modal-header">
 								          <button type="button" class="close" data-dismiss="modal">&times;</button>
-								          <h4 class="modal-title">Send</h4>
+								          <h4 class="modal-title" align="center">Proofs</h4>
 								        </div>
 								        <div class="modal-body">
 								        	<div id=fileList>
 								        		
 								        	</div>
+								        	<br>
 								        <form method='POST' action='/upload/' enctype="multipart/form-data">
-								          <input type=file id=section-title name='file' multiple><br>
+								          <input type=file class="form-control-file btn btn-primary" id=section-title name='file' multiple><br>
 										  <input type=hidden id=uploadModalID name=pointID><br>		
 										</div>
 										<div class='modal-footer'>
@@ -517,7 +518,7 @@
 								      <div class="modal-content">
 								        <div class="modal-header">
 								          <button type="button" class="close" data-dismiss="modal">&times;</button>
-								          <h4 class="modal-title">Comment</h4>
+								          <h4 class="modal-title" align="center">Comment</h4>
 								        </div>
 								        <div class="modal-body" id="CommentDiv">
 								        
@@ -537,12 +538,12 @@
 							      <div class="modal-content">
 							        <div class="modal-header">
 							          <button type="button" class="close" data-dismiss="modal">&times;</button>
-							          <h4 class="modal-title">Add Section</h4>
+							          <h4 class="modal-title" align="center">Choose a Point</h4>
 							        </div>
 							        <div class="modal-body">
 							        <form method='POST' action='/add_verified_point/'>
-							          Point: <select class="form-control" placeholder="Department" name="point_id" id="verified_point">
-										<option value="">Choose a type</option>
+							          <select class="form-control" placeholder="Department" name="point_id" id="verified_point">
+										<option value="">Choose a Point</option>
 										{% for section in verified_points %}
 										{% if section.type == 'BL' %}
 										{% for point in section.list %}
@@ -568,12 +569,12 @@
 							      <div class="modal-content">
 							        <div class="modal-header">
 							          <button type="button" class="close" data-dismiss="modal">&times;</button>
-							          <h4 class="modal-title">Add Section</h4>
+							          <h4 class="modal-title" align="center">Choose a Point</h4>
 							        </div>
 							        <div class="modal-body">
 							        <form method='POST' action='/add_verified_point/'>
-							          Point: <select class="form-control" placeholder="Department" name="point_id" id="verified_point">
-										<option value="">Choose a type</option>
+							          <select class="form-control" placeholder="Department" name="point_id" id="verified_point">
+										<option value="">Choose a Point</option>
 										{% for section in verified_points %}
 										{% if section.type == 'BU' %}
 										{% for point in section.list %}
@@ -599,12 +600,12 @@
 							      <div class="modal-content">
 							        <div class="modal-header">
 							          <button type="button" class="close" data-dismiss="modal">&times;</button>
-							          <h4 class="modal-title">Add Section</h4>
+							          <h4 class="modal-title" align="center">Choose a Point</h4>
 							        </div>
 							        <div class="modal-body">
 							        <form method='POST' action='/add_verified_point/'>
-							          Point: <select class="form-control" placeholder="Department" name="point_id" id="verified_point">
-										<option value="">Choose a type</option>
+							           <select class="form-control" placeholder="Department" name="point_id" id="verified_point">
+										<option value="">Choose a Point</option>
 										{% for section in verified_points %}
 										{% if section.type == 'M2' %}
 										{% for point in section.list %}
@@ -836,6 +837,7 @@
 			form.action = "/delete_section/";
 			element.value = id;
 			element.name = "section_id";
+			element.setAttribute("type", "hidden");
 			form.appendChild(element);
 			document.body.appendChild(form);
 			form.submit();
@@ -849,6 +851,7 @@
 			form.action = "/delete_point/";
 			element.value = id;
 			element.name = "point_id";
+			element.setAttribute("type", "hidden");
 			form.appendChild(element);
 			document.body.appendChild(form);
 			form.submit();
@@ -902,7 +905,7 @@
 					var output = "";
 					for (var i = 0; i < file_list.length; i++){
 						path = encodeURIComponent(file_list[i].trim());
-						output += "<a href=/media/"+ id +"/" + path + " target=_blank>" + file_list[i] + "</a><button class='btn-red btn' onClick=\"return deleteFile("+id+", '"+file_list[i]+"');\">&times;</button><br>";
+						output += "<a href=/media/"+ id +"/" + path + " target=_blank>" + file_list[i] + "</a><button class='close' onClick=\"return deleteFile("+id+", '"+file_list[i]+"');\">&times;</button><br>";
 					}
 					document.getElementById('fileList').innerHTML = output;
 				}
@@ -931,15 +934,16 @@
 				handle: 'span',
 				items: ':not(.disabled)'
 			}).bind('sortupdate', function(){
-				//console.log(this.id);
+				// console.log(this.id);
 				var new_order = [];
 				var c = this.children;
 				for (i = 0; i < c.length; i++) {
-					//console.log(c[i].id);
+					console.log(c[i].id);
 					new_order.push(c[i].id);
 				}
+				var z = this.id.split('-');
 				var xhttp = new XMLHttpRequest();
-                xhttp.open("GET", "/reorder_section/?section="+this.id+"&points="+new_order.toString(), true);
+                xhttp.open("GET", "/reorder_section/?section="+z[0]+"&points="+new_order.toString(), true);
         		xhttp.send(); 
 			});
 		});
@@ -952,6 +956,7 @@
 			form.action = "/open_conversation/";
 			element.value = id;
 			element.name = "point_id";
+			element.setAttribute("type", "hidden");
 			form.appendChild(element);
 			document.body.appendChild(form);
 			form.submit();

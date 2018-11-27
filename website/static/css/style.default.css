@@ -21,6 +21,10 @@ NAVBAR
   display: inline-block;
 }
 
+option {
+   width: 220px;
+  overflow:hidden;
+}
 /*input {
   border: 1px solid transparent;
   background-color: #f1f1f1;
